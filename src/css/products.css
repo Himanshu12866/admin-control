@@ -1,0 +1,125 @@
+
+
+/* Fixed header at the top */
+.products-page-heading {
+  position: sticky;
+  top: 50px;
+  z-index: 10;
+  background-color: #fff; 
+  padding: 20px 0; 
+  border-bottom: 1px solid rgb(231 234 243 / 70%);
+}
+.products-page-heading h1 {
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  font-size: 1.4109375rem;
+  font-family: "poppins";
+}
+.all-products .container-fluid {
+  width: 98%;
+}
+.products-page-heading button {
+  font-size: 16px;
+  font-family: "poppins";
+}
+.products-page-heading button a {
+  text-decoration: none;
+  color: #fff;
+}
+.products-page-heading button
+{
+    background-color: #24425a !important;
+    border-color: #24425a !important;
+}
+.products-page-heading {
+  border-bottom: 1px solid rgb(231 234 243 / 70%);
+  padding: 50px 0px;
+}
+.all-product-list{
+  border: 1px solid rgb(231 234 243 / 70%);
+  border-radius: 15px;
+  height: auto;
+  overflow: hidden;
+  margin-top: 20px; 
+}
+.search-bar-product {
+  margin-left: 20px;
+}
+.search-bar-product input:focus {
+  outline: none; /* Removes the default focus outline */
+  box-shadow: none; /* Removes any box-shadow */
+  border-color: inherit; /* Ensures border color doesn't change */
+  border-color: rgb(231 234 243 / 70%); /* Light gray border on focus */
+  transition: border-color 0.2s ease;
+}
+.search-bar-product input {
+  border: none;
+  outline: none;
+  padding-left: 40px;
+  border-bottom: 1px solid rgb(231 234 243 / 70%);
+  width: 250px;
+  margin-top: 40px;
+}
+.filtering button
+{
+    margin-top: 40px;
+    margin-right: 20px;
+    padding: 10px;
+    border:none;
+    outline:none;
+    background-color: transparent;
+    border: 1px solid rgb(231 234 243 / 70%);
+    color: #677788;
+}
+.filtering button:hover
+{
+    color: #24425a;
+}
+.actions button
+{
+    padding: 10px;
+    border:none;
+    outline:none;
+    background-color: transparent;
+    border: 1px solid rgb(231 234 243 / 70%);
+    color: #677788;
+}
+.actions button:hover
+{
+    color: #24425a;
+}
+.table>:not(caption)>*>*
+{
+    border-color: transparent;
+    padding: 1.5rem 2.5rem !important;
+    border-bottom-width: 0 !important;
+}
+
+table
+{
+  font-family: 'poppins';
+} 
+.thead-box th {
+  background-color: rgb(248 250 253) !important; /* Light background color */
+  border-bottom: 1px solid #dee2e6; /* Optional: border for separation */
+  margin-bottom: 30px !important;
+}
+.table-footer td{
+  border-top: 1px solid #dee2e6; 
+}
+.product-image
+{
+  width: 50px;
+  height: 50px;
+}
+.product-image img 
+{
+  width: 100%;
+
+  height: 100%;
+}
+.title:hover
+{
+  color: blue;
+}

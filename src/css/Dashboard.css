@@ -1,0 +1,102 @@
+/* Sidebar Styling */
+
+.Logo
+{
+    width: 150px;
+    height: auto;
+}
+.sidebar {
+    background-color: transparent !important; 
+    border-right: 1px solid #ddd; 
+    height: 100vh; 
+    position: fixed; /* Fix the sidebar in place */
+    top: 0;
+    left: 0;
+    z-index: 100; /* Make sure it's above other content */
+    overflow-y: auto; 
+  }
+
+  .sidebar.collapsed {
+    width: 80px;
+  }
+
+  .sidebar.collapsed .nav-link {
+    text-align: center;
+    padding: 1rem;
+  }
+  .sidebar.collapsed .nav-link span {
+    display: none;
+  }
+
+  .sidebar.collapsed img {
+    display: none;
+  }
+  .chevron-icon {
+    font-size: 8px;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 0.875rem !important;
+    margin-bottom: 0.25rem;
+    color: black !important;
+    font-family: 'Poppins';
+  }
+  .left-content-header
+  {
+   border-bottom: 1px solid #ddd;
+   
+  }
+ .avthar
+ {
+    width: 50px;
+    height: 50px;
+ }
+ .avthar img 
+ {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+ }
+ .search-bar {
+  width: 300px; /* Adjust width as needed */
+}
+.left-content-header input
+{
+    border:none;
+    outline:none;
+    padding-left: 40px;
+}
+.search-input {
+
+  border-radius: 20px;
+
+}
+.search-input::placeholder
+{
+    font-size: 15px;
+    font-family: 'poppins';
+}
+.left-content-header input:hover
+{
+    background-color: #f6f7fa;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Prevents the icon from blocking input focus */
+}
+.nav-link.active {
+    background-color: #f6f7fa;
+  }
+  .right-content
+  {
+    height:100%; 
+    overflow-y: auto; /* Enable scrolling for the right content area */
+    right:0px;
+    position: absolute;
+  }
+
+
+  

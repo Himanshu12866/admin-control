@@ -1,0 +1,53 @@
+
+.product-details .container-fluid
+{
+width: 98% !important;
+/* margin-top: 30px; */
+}
+.product-details a
+{
+    text-decoration: none;
+    color: gray;
+    font-size: 16px;
+  font-family: 'poppins';
+  font-weight: 300;
+}
+.product-details a:hover
+{
+    color: blue;
+}
+.prodInfo
+{
+   border: 1px solid rgb(231 234 243 / 70%);
+   border-radius: 10px;
+   padding: 20px;
+}
+.prodInfo form  input ,.prodInfo form  textarea  {
+    padding: 13px 20px;
+   font-size: 14px;
+}
+.prodInfo form
+{
+    font-family: 'poppins';
+}
+.dropdown-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Ensure the icon doesn't interfere with dropdown clicks */
+  }
+  .product-head-data
+  {
+    position: sticky;
+    top: 67px;
+    z-index: 10;
+    background-color: #fff; 
+    padding-top: 20px;
+  }

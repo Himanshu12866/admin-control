@@ -1,19 +1,19 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Livon Admin Panel",
+  "name": "Livon Comforts Admin Panel",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "./Livon logos 1-03.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "./Livon logos 1-03.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "./Livon logos 1-03.png",
       "type": "image/png",
       "sizes": "512x512"
     }
