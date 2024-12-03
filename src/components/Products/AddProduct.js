@@ -10,7 +10,8 @@ export default function AddProduct() {
   const [mediaFiles, setMediaFiles] = useState([]); // State for Media Files
   const [coverMediaFiles, setCoverMediaFiles] = useState([]); // State for Cover Media Files
   const [thickness, setThickness] = useState("");
-  const [data, setData] = useState([{}]);
+  const [data, setData] = useState([]); // State to store fetched data
+  const [categories, setCategories] = useState([]); // State to store unique categories
   const [size, setSize] = useState("");
   const [price, setPrice] = useState("");
   const [variantTable, setVariantTable] = useState("none");
@@ -42,19 +43,35 @@ export default function AddProduct() {
           "https://livon-rest-healthy-backend-26380982364.us-east1.run.app/productdetails"
         )
         .then((response) => {
-          return response.data;
-        });
-      setData(fetchedData);
-      console.log(fetchedData);
+          setData(response.data);
+        }); // Store fetched data in state
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data:", error);
     }
   };
 
+  // Extract unique categories from data
+  const extractCategories = (data) => {
+    let products = data.map(item => item.products)
+    console.log(products)
+    const uniqueCategories = [...new Set(products.map((item) => item.category))]; // Create unique category list
+    setCategories(uniqueCategories); // Store unique categories in state
+    console.log("Unique Categories:", uniqueCategories); // Log unique categories
+  };
+
+  // Fetch data when the component mounts
   useEffect(() => {
     LoadCatSubCat();
-    console.log(data.map((item) => item.products));
+    console.log(data)
   }, []);
+
+  // Extract categories when data is updated
+  useEffect(() => {
+    if (data.length > 0) {
+      extractCategories(data); // Extract categories when data is available
+    }
+  }, [data]);
+
   const handleUpdateVariant = () => {
     const updatedVariants = [...variants];
     updatedVariants[editingVariantIndex] = {
@@ -230,6 +247,11 @@ export default function AddProduct() {
                         name="category"
                         placeholder="Category"
                       />
+                      <select>
+                        {categories.map((category, index) => (
+                          <option key={index}>{category?.category}</option>
+                        ))}
+                      </select>
                     </Form.Group>
                     <Form.Group as={Col} md="6">
                       <Form.Label>Subcategory</Form.Label>
