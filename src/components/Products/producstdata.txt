@@ -1,0 +1,170 @@
+<div>
+                  <h5>Covers Information</h5>
+                </div>
+                <hr />
+                <div className="cover-details mt-4">
+                  {/* Cover Details */}
+                  <Form.Group className="mt-3">
+                    <Form.Label>Cover Name</Form.Label>
+                    <Form.Control type="text" />
+                  </Form.Group>
+                  <Form.Group className="mt-3">
+                    <Form.Label>Cover Note</Form.Label>
+                    <Form.Control
+                      type="text"
+                    />
+                  </Form.Group>
+                  <Form.Group className="mt-4">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      style={{
+                        height: '100px',
+                        whiteSpace: 'pre-wrap',
+                        paddingTop: '30px',
+                        lineHeight: '40px'
+                      }}
+                    />
+                  </Form.Group>
+                  {/* Drag and drop for Cover Image */}
+                  <Row className=" mt-5">
+                    <div>
+                      <h5>Cover Media</h5>
+                    </div>
+                    <div className="preview-images">
+                      {coverMediaFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="preview-container mt-3 position-relative"
+                          style={{ display: "inline-block", marginRight: "10px" }}
+                        >
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt="Uploaded Preview"
+                            style={{
+                              width: "100px", // Adjust the preview size
+                              height: "auto", // Adjust the preview size
+                              objectFit: "cover",
+                              borderRadius: "10px",
+                            }}
+                          />
+                          <FontAwesomeIcon
+                            icon={faTimes}
+                            className="position-absolute top-0 end-0 p-1"
+                            style={{
+                              cursor: "pointer",
+                              color: "red",
+                              fontSize: "1.2rem",
+                            }}
+                            onClick={() => removeCoverMediaFile(index)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <Form.Group>
+                      <div
+                        className="file-upload"
+                        onDrop={(e) => handleDrop(e, true)}
+                        onDragOver={handleDragOver}
+                        onClick={() => document.getElementById('cover-file-input').click()} // Open the file dialog on click
+                        style={{
+                          width: "100%",
+                          height: "200px",
+                          border: "2px dashed #ccc",
+                          borderRadius: "10px",
+                          textAlign: "center",
+                          paddingTop: "70px",
+                          cursor: "pointer",
+                          backgroundColor: "rgb(248 250 253)",
+                        }}
+                      >
+                        <p>Drag and drop your file here</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          style={{ display: "none" }}
+                          id="cover-file-input"
+                          onChange={handleCoverMediaUpload}
+                        />
+                        <p>or</p>
+                        <label
+                          htmlFor="cover-file-input"
+                          className="upload-button"
+                        >
+                          Browse File
+                        </label>
+                      </div>
+                    </Form.Group>
+                  </Row>
+                </div>
+
+
+Table for variant
+
+
+                  <Row className="mt-5">
+                  <Table striped bordered hover>
+                    <thead>
+                      <tr>
+                        <th>Thickness</th>
+                        <th>Size</th>
+                        <th>Dimensions</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.keys(groupedVariants).map((thickness) =>
+                        groupedVariants[thickness].map((variant, index) => {
+                          const size = variant.attributes?.find(
+                            (attr) => attr.name === "categorytypes"
+                          )?.value;
+                          const price = variant.price;
+                          const dimensions =
+                            variant.attributes
+                              ?.filter(
+                                (attr) => attr.name === "dimension_inches"
+                              )
+                              .map((attr) => attr.value)
+                              .flat() || []; // Ensure dimensions is always an array
+
+                          return (
+                            <tr key={variant._id}>
+                              <td>{thickness} inches</td>
+                              <td>{size}</td>
+                              <td>
+                                {Array.isArray(dimensions) &&
+                                dimensions.length > 0
+                                  ? dimensions.map((dim, idx) => (
+                                      <div key={idx}>{dim}</div>
+                                    ))
+                                  : "No dimensions available"}
+                              </td>
+                              <td>{price}</td>
+                              <td>
+                                <Button
+                                  variant="warning"
+                                  onClick={() =>
+                                    handleEditVariant(thickness, index)
+                                  }
+                                  className="me-2"
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  variant="danger"
+                                  onClick={() =>
+                                    handleRemoveVariant(variant._id, thickness)
+                                  }
+                                >
+                                  Remove
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </Table>
+                </Row>
