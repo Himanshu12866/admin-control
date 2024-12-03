@@ -16,10 +16,16 @@ export default function AddProduct() {
   const [price, setPrice] = useState("");
   const [editingVariantIndex, setEditingVariantIndex] = useState(null);
   const [editingThickness, setEditingThickness] = useState("");
-
+  const [variantTable, setVariantTable] = useState("none");
+  const [inchW, setInchW] = useState(1);
+  const [inchH, setInchH] = useState(1);
+  const [dimension_inches, setDimension_inches] = useState("");
+  const [cmH, setCmH] = useState();
+  const [cmW, setCmW] = useState();
+  const [dimension_cm, setDimension_cm] = useState("");
   // Handle adding a new variant
   const handleAddVariant = () => {
-    if (!thickness || !size || dimensions.length === 0 || !price) {
+    if (!thickness || !size || !price) {
       alert("Please fill all fields");
       return;
     }
@@ -160,6 +166,68 @@ export default function AddProduct() {
     event.preventDefault();
   };
 
+  // Functions for updating variant dimenstions in inches and cms
+
+  const handleInchW = (e) => {
+    let value = e.target.value;
+  
+    // Allow the user to type freely but validate on non-empty inputs
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setInchW(value); // Still allow the input to be shown
+      return; // Do not proceed further for invalid inputs
+    }
+  
+    let cmValue = Math.floor(parseFloat(value) * 2.54); // Convert inches to cm
+    setInchW(value); // Set the input value
+    setCmW(cmValue); // Update the corresponding cm value
+  };
+  
+  const handleInchH = (e) => {
+    let value = e.target.value;
+  
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setInchH(value);
+      return;
+    }
+  
+    let cmValue = Math.floor(parseFloat(value) * 2.54);
+    setInchH(value);
+    setCmH(cmValue);
+  };
+  
+  const handleCmW = (e) => {
+    let value = e.target.value;
+  
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setCmW(value);
+      return;
+    }
+  
+    let inchValue = Math.floor(parseFloat(value) / 2.54);
+    setCmW(value);
+    setInchW(inchValue);
+  };
+  
+  const handleCmH = (e) => {
+    let value = e.target.value;
+  
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setCmH(value);
+      return;
+    }
+  
+    let inchValue = Math.floor(parseFloat(value) / 2.54);
+    setCmH(value);
+    setInchH(inchValue);
+  };
+  
+  function setDimensionInches() {
+    setDimension_inches(`${inchW} * ${inchH}`);
+    setDimension_cm(`${cmW} * ${cmH}`);
+    console.log(dimension_inches);
+    console.log(dimension_cm);
+  }
+
   return (
     <div>
       <div className="product-details">
@@ -231,10 +299,44 @@ export default function AddProduct() {
                     />
                   </Form.Group>
                 </form>
+
+                {/* Media Section */}
+                <Row className="mt-5 mb-5">
+                  <div className="gap-6">
+                    <Button
+                      data-bs-toggle="modal"
+                      data-bs-target="#variant-modal"
+                      className="btn btn-primary mr-5 w-52"
+                    >
+                      Add Variant
+                    </Button>
+                    <Button
+                      className="btn btn-success mr-5 w-52"
+                      data-bs-toggle="modal"
+                      data-bs-target="#cover-modal"
+                    >
+                      Add Cover
+                    </Button>
+                  </div>
+
+                  <div className="add-product-btn-container mt-2 ">
+                    {/* Centered the Add Product button */}
+                    <Button
+                      variant="primary"
+                      className="add-product-btn w-100 "
+                    >
+                      Add Product
+                    </Button>
+                  </div>
+                </Row>
               </Col>
 
               {/* Cover Information */}
-              <Col lg={4} className="prodInfo">
+              <Col
+                lg={4}
+                style={{ border: "none" }}
+                className="prodInfo sm:h-[300px]"
+              >
                 <div>
                   <h5>Media</h5>
                 </div>
@@ -252,7 +354,7 @@ export default function AddProduct() {
                             alt="Uploaded Preview"
                             style={{
                               width: "150px", // Adjust the preview size
-                              height: "auto", // Adjust the preview size
+                              height: "100px", // Adjust the preview size
                               objectFit: "cover",
                               borderRadius: "10px",
                             }}
@@ -311,26 +413,6 @@ export default function AddProduct() {
             </Row>
           </div>
 
-          {/* Media Section */}
-          <Row className="mt-5 mb-5">
-            <div className="gap-6">
-              <Button
-                data-bs-toggle="modal"
-                data-bs-target="#variant-modal"
-                className="btn btn-primary mr-5"
-              >
-                Add Variant
-              </Button>
-              <Button
-                className="btn btn-success mr-5"
-                data-bs-toggle="modal"
-                data-bs-target="#cover-modal"
-              >
-                Add Cover
-              </Button>
-            </div>
-          </Row>
-
           {/* Variants Secton */}
           <div className="modal fade" id="variant-modal">
             <div className="modal-dialog modal-dialog-centered modal-lg">
@@ -347,64 +429,185 @@ export default function AddProduct() {
                 <div className="modal-body">
                   <Form>
                     {/* Thickness Field */}
-                    <Form.Group controlId="thickness" className="mb-3">
-                      <Form.Label>Thickness (inches)</Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={thickness}
-                        onChange={(e) => setThickness(e.target.value)}
-                        placeholder="Enter thickness"
-                      />
+                    <Form.Group
+                      controlId="thickness"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Thickness (inches)</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <Form.Control
+                            type="number"
+                            className="w-100"
+                            value={thickness}
+                            onChange={(e) => setThickness(e.target.value)}
+                            placeholder="Enter thickness"
+                          />
+                        </div>
+                      </div>
                     </Form.Group>
 
                     {/* Size Field */}
-                    <Form.Group controlId="size" className="mb-3">
-                      <Form.Label>Size</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={size}
-                        onChange={(e) => setSize(e.target.value)}
-                        placeholder="Enter size"
-                      />
+                    <Form.Group
+                      controlId="size"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Size</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <Form.Control
+                            type="text"
+                            className="w-100"
+                            value={size}
+                            onChange={(e) => setSize(e.target.value)}
+                            placeholder="Enter size"
+                          />
+                        </div>
+                      </div>
                     </Form.Group>
 
                     {/* Dimensions Field */}
-                    <Form.Group controlId="dimensions" className="mb-3">
-                      <Form.Label>Dimensions</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={dimensions.join(", ")}
-                        onChange={(e) =>
-                          setDimensions(e.target.value.split(","))
-                        }
-                        placeholder="Enter dimensions separated by commas"
-                      />
+                    <Form.Group
+                      controlId="dimensions"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Dimensions (In)</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <div className="row w-100">
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Width</span>
+                                <input
+                                  className="form-control"
+                                  value={inchW}
+                                  onChange={handleInchW}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-2 flex justify-center items-center">
+                              <p className="text-3xl font-medium">*</p>
+                            </div>
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Height</span>
+                                <input
+                                  className="form-control"
+                                  value={inchH}
+                                  onChange={handleInchH}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          {/* <Form.Control
+                            type="text"
+                            value={dimensions.join(", ")}
+                            onChange={(e) =>
+                              setDimensions(e.target.value.split(","))
+                            }
+                            placeholder="Enter dimensions separated by commas"
+                          /> */}
+                        </div>
+                      </div>
+                    </Form.Group>
+                    <Form.Group
+                      controlId="dimensions"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Dimensions (Cm)</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <div className="row w-100">
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Width</span>
+                                <input
+                                  className="form-control"
+                                  value={cmW}
+                                  onChange={handleCmW}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-2 flex justify-center items-center">
+                              <p className="text-3xl font-medium">*</p>
+                            </div>
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Height</span>
+                                <input
+                                  className="form-control"
+                                  value={cmH}
+                                  onChange={handleCmH}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          {/* <Form.Control
+                            type="text"
+                            value={dimensions.join(", ")}
+                            onChange={(e) =>
+                              setDimensions(e.target.value.split(","))
+                            }
+                            placeholder="Enter dimensions separated by commas"
+                          /> */}
+                        </div>
+                      </div>
                     </Form.Group>
 
                     {/* Price Field */}
-                    <Form.Group controlId="price" className="mb-3">
-                      <Form.Label>Price</Form.Label>
-                      <Form.Control
-                        type="number"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        placeholder="Enter price"
-                      />
+
+                    <Form.Group
+                      controlId="price"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Price</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <Form.Control
+                            type="number"
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            placeholder="Enter price"
+                          />
+                        </div>
+                      </div>
                     </Form.Group>
 
                     {/* Submit Button */}
-                    <Button
-                      variant="primary"
-                      onClick={
-                        editingVariantIndex !== null
-                          ? handleUpdateVariant
-                          : handleAddVariant
-                      }
-                    >
-                      {editingVariantIndex !== null
-                        ? "Update Variant"
-                        : "Add Variant"}
-                    </Button>
+                    <div className="flex justify-center mt-4 mb-2">
+                      <Button
+                        variant="primary"
+                        data-bs-dismiss="modal"
+                        onClick={() => {
+                          if (editingVariantIndex !== null) {
+                            handleUpdateVariant();
+                            setDimensionInches();
+                          } else {
+                            handleAddVariant();
+                            setDimensionInches();
+                          }
+                          setVariantTable("block"); // Add your new functionality here
+                        }}
+                      >
+                        {editingVariantIndex !== null
+                          ? "Update Variant"
+                          : "Add Variant"}
+                      </Button>
+                    </div>
                   </Form>
                 </div>
               </div>
@@ -422,9 +625,7 @@ export default function AddProduct() {
                     type="button"
                     className="btn btn-close"
                     data-bs-dismiss="modal"
-                  >
-                
-                  </button>
+                  ></button>
                 </div>
 
                 {/* Modal Body */}
@@ -465,7 +666,12 @@ export default function AddProduct() {
                       <div
                         key={index}
                         className="preview-container position-relative"
-                        style={{ display: "inline-block", marginRight: "5px" , marginLeft:"10px" , padding:"5px"}}
+                        style={{
+                          display: "inline-block",
+                          marginRight: "5px",
+                          marginLeft: "10px",
+                          padding: "5px",
+                        }}
                       >
                         <img
                           src={URL.createObjectURL(file)}
@@ -506,7 +712,7 @@ export default function AddProduct() {
                         border: "2px dashed #ccc",
                         borderRadius: "10px",
                         textAlign: "center",
-                        paddingTop:"20px",
+                        paddingTop: "20px",
                         cursor: "pointer",
                         backgroundColor: "rgb(248, 250, 253)",
                       }}
@@ -533,15 +739,70 @@ export default function AddProduct() {
               </div>
             </div>
           </div>
-
-          <div className="add-product-btn-container mt-2 ">
-            {/* Centered the Add Product button */}
-            <Button variant="primary" className="add-product-btn ">
-              Add Product
-            </Button>
-          </div>
         </Container>
       </div>
+      {/* <Row className={`mt-5 d-${variantTable}`}>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Thickness</th>
+              <th>Size</th>
+              <th>Dimensions</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(groupedVariants).map((thickness) =>
+              groupedVariants[thickness].map((variant, index) => {
+                const size = variant.attributes?.find(
+                  (attr) => attr.name === "categorytypes"
+                )?.value;
+                const price = variant.price;
+                const dimensions =
+                  variant.attributes
+                    ?.filter((attr) => attr.name === "dimension_inches")
+                    .map((attr) => attr.value)
+                    .flat() || []; // Ensure dimensions is always an array
+
+                return (
+                  <tr key={variant._id}>
+                    <td>{thickness} inches</td>
+                    <td>{size}</td>
+                    <td>
+                      {Array.isArray(dimensions) && dimensions.length > 0
+                        ? dimensions.map((dim, idx) => (
+                            <div key={idx}>{dim}</div>
+                          ))
+                        : "No dimensions available"}
+                    </td>
+                    <td>{price}</td>
+                    <td>
+                      <Button
+                        variant="warning"
+                        onClick={() => handleEditVariant(thickness, index)}
+                        className="me-2"
+                        data-bs-target="#variant-modal"
+                        data-bs-toggle="modal"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() =>
+                          handleRemoveVariant(variant._id, thickness)
+                        }
+                      >
+                        Remove
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </Table>
+      </Row> */}
     </div>
   );
 }
