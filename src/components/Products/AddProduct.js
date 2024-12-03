@@ -17,8 +17,8 @@ export default function AddProduct() {
   const [editingVariantIndex, setEditingVariantIndex] = useState(null);
   const [editingThickness, setEditingThickness] = useState("");
   const [variantTable, setVariantTable] = useState("none");
-  const [inchW, setInchW] = useState(1);
-  const [inchH, setInchH] = useState(1);
+  const [inchW, setInchW] = useState();
+  const [inchH, setInchH] = useState();
   const [dimension_inches, setDimension_inches] = useState("");
   const [cmH, setCmH] = useState();
   const [cmW, setCmW] = useState();
@@ -170,53 +170,44 @@ export default function AddProduct() {
 
   const handleInchW = (e) => {
     let value = e.target.value;
-  
-    // Allow the user to type freely but validate on non-empty inputs
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setInchW(value); // Still allow the input to be shown
-      return; // Do not proceed further for invalid inputs
+    if (!value || isNaN(value) || value <= 0) {
+      alert("Please enter a valid positive value for width in inches.");
+      return;
     }
-  
-    let cmValue = Math.floor(parseFloat(value) * 2.54); // Convert inches to cm
-    setInchW(value); // Set the input value
-    setCmW(cmValue); // Update the corresponding cm value
+    let cmValue = Math.floor(value * 2.54); // Convert inches to cm
+    setInchW(value);
+    setCmW(cmValue);
   };
   
   const handleInchH = (e) => {
     let value = e.target.value;
-  
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setInchH(value);
+    if (!value || isNaN(value) || value <= 0) {
+      alert("Please enter a valid positive value for height in inches.");
       return;
     }
-  
-    let cmValue = Math.floor(parseFloat(value) * 2.54);
+    let cmValue = Math.floor(value * 2.54); // Convert inches to cm
     setInchH(value);
     setCmH(cmValue);
   };
   
   const handleCmW = (e) => {
     let value = e.target.value;
-  
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setCmW(value);
+    if (!value || isNaN(value) || value <= 0) {
+      alert("Please enter a valid positive value for width in centimeters.");
       return;
     }
-  
-    let inchValue = Math.floor(parseFloat(value) / 2.54);
+    let inchValue = Math.floor(value / 2.54); // Convert cm to inches
     setCmW(value);
     setInchW(inchValue);
   };
   
   const handleCmH = (e) => {
     let value = e.target.value;
-  
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setCmH(value);
+    if (!value || isNaN(value) || value <= 0) {
+      alert("Please enter a valid positive value for height in centimeters.");
       return;
     }
-  
-    let inchValue = Math.floor(parseFloat(value) / 2.54);
+    let inchValue = Math.floor(value / 2.54); // Convert cm to inches
     setCmH(value);
     setInchH(inchValue);
   };

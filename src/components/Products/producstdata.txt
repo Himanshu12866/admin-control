@@ -168,3 +168,352 @@ Table for variant
                     </tbody>
                   </Table>
                 </Row>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className="modal fade" id="variant-modal">
+            <div className="modal-dialog modal-dialog-centered modal-lg">
+              <div className="modal-content">
+                <div className="p-4 modal-header">
+                  <h5>Variants</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <Form>
+                    {/* Thickness Field */}
+                    <Form.Group
+                      controlId="thickness"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Thickness (inches)</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <Form.Control
+                            type="number"
+                            className="w-100"
+                            value={thickness}
+                            onChange={(e) => setThickness(e.target.value)}
+                            placeholder="Enter thickness"
+                          />
+                        </div>
+                      </div>
+                    </Form.Group>
+
+                    {/* Size Field */}
+                    <Form.Group
+                      controlId="size"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Size</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <Form.Control
+                            type="text"
+                            className="w-100"
+                            value={size}
+                            onChange={(e) => setSize(e.target.value)}
+                            placeholder="Enter size"
+                          />
+                        </div>
+                      </div>
+                    </Form.Group>
+
+                    {/* Dimensions Field */}
+                    <Form.Group
+                      controlId="dimensions"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Dimensions (In)</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <div className="row w-100">
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Width</span>
+                                <input
+                                  className="form-control"
+                                  value={inchW}
+                                  onChange={handleInchW}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-2 flex justify-center items-center">
+                              <p className="text-3xl font-medium">*</p>
+                            </div>
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Height</span>
+                                <input
+                                  className="form-control"
+                                  value={inchH}
+                                  onChange={handleInchH}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                       
+                        </div>
+                      </div>
+                    </Form.Group>
+                    <Form.Group
+                      controlId="dimensions"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Dimensions (Cm)</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <div className="row w-100">
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Width</span>
+                                <input
+                                  className="form-control"
+                                  value={cmW}
+                                  onChange={handleCmW}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-2 flex justify-center items-center">
+                              <p className="text-3xl font-medium">*</p>
+                            </div>
+                            <div className="col-5">
+                              <div className="input-group">
+                                <span className="input-group-text">Height</span>
+                                <input
+                                  className="form-control"
+                                  value={cmH}
+                                  onChange={handleCmH}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        
+                        </div>
+                      </div>
+                    </Form.Group>
+
+                    {/* Price Field */}
+
+                    <Form.Group
+                      controlId="price"
+                      className="mb-3 flex justify-between"
+                    >
+                      <div className="row w-100">
+                        <div className="col-4">
+                          <Form.Label>Price</Form.Label>
+                        </div>
+                        <div className="col-8">
+                          <Form.Control
+                            type="number"
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            placeholder="Enter price"
+                          />
+                        </div>
+                      </div>
+                    </Form.Group>
+
+                    {/* Submit Button */}
+                    <div className="flex justify-center mt-4 mb-2">
+                      <Button
+                        variant="primary"
+                        data-bs-dismiss="modal"
+                        onClick={() => {
+                          if (editingVariantIndex !== null) {
+                            handleUpdateVariant();
+                            setDimensionInches();
+                          } else {
+                            handleAddVariant();
+                            setDimensionInches();
+                          }
+                          setVariantTable("block"); // Add your new functionality here
+                        }}
+                      >
+                        {editingVariantIndex !== null
+                          ? "Update Variant"
+                          : "Add Variant"}
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            const handleInchW = (e) => {
+    let value = e.target.value;
+  
+    // Allow the user to type freely but validate on non-empty inputs
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setInchW(value); // Still allow the input to be shown
+      return; // Do not proceed further for invalid inputs
+    }
+  
+    let cmValue = Math.floor(parseFloat(value) * 2.54); // Convert inches to cm
+    setInchW(value); // Set the input value
+    setCmW(cmValue); // Update the corresponding cm value
+  };
+  
+  const handleInchH = (e) => {
+    let value = e.target.value;
+  
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setInchH(value);
+      return;
+    }
+  
+    let cmValue = Math.floor(parseFloat(value) * 2.54);
+    setInchH(value);
+    setCmH(cmValue);
+  };
+  
+  const handleCmW = (e) => {
+    let value = e.target.value;
+  
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setCmW(value);
+      return;
+    }
+  
+    let inchValue = Math.floor(parseFloat(value) / 2.54);
+    setCmW(value);
+    setInchW(inchValue);
+  };
+  
+  const handleCmH = (e) => {
+    let value = e.target.value;
+  
+    if (!value || isNaN(value) || parseFloat(value) <= 0) {
+      setCmH(value);
+      return;
+    }
+  
+    let inchValue = Math.floor(parseFloat(value) / 2.54);
+    setCmH(value);
+    setInchH(inchValue);
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+  const handleEditVariant = (thickness, index) => {
+    const variant = groupedVariants[thickness][index];
+
+    // Get the attributes correctly
+    const variantThickness = thickness; // Set thickness directly
+    const variantSize = variant.attributes?.find(
+      (attr) => attr.name === "categorytypes"
+    )?.value;
+    const variantDimensions =
+      variant.attributes?.find((attr) => attr.name === "dimension_inches")
+        ?.value || []; // Ensure it's always an array
+    const variantPrice = variant.price;
+
+    // Set the form fields to the variant's values
+    setThickness(variantThickness); // Set thickness directly
+    setSize(variantSize || "");
+    setDimensions(variantDimensions);
+    setPrice(variantPrice || "");
+
+    setEditingVariantIndex(index); // Mark as editing this variant by index
+    setEditingThickness(thickness); // Store the thickness for updating
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const handleUpdateVariant = () => {
+    if (!thickness) {
+      alert("Please provide a thickness");
+      return;
+    }
+
+    // Check if the variant to be updated exists
+    if (editingVariantIndex === null || editingThickness === "") {
+      alert("No variant selected for update");
+      return;
+    }
+
+    setGroupedVariants((prevVariants) => {
+      const updatedVariants = { ...prevVariants };
+
+      // Find the variant using thickness and index
+      const updatedVariant =
+        updatedVariants[editingThickness][editingVariantIndex];
+
+      // Only update the thickness, leave the rest intact
+      updatedVariant._id = `${thickness}-${updatedVariant._id.split("-")[1]}`; // Update _id based on new thickness
+      updatedVariants[editingThickness][editingVariantIndex] = updatedVariant;
+
+      return updatedVariants;
+    });
+
+    // Clear form after update
+    setThickness("");
+    setSize("");
+    setDimensions([]);
+    setPrice("");
+    setEditingVariantIndex(null); // Reset editing state
+    setEditingThickness(""); // Reset thickness
+  };
