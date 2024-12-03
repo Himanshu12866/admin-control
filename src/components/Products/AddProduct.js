@@ -1,129 +1,101 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Form, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faTimes } from "@fortawesome/free-solid-svg-icons";
 import "../../css/product-details.css";
 import "../../css/addproduct.css";
-
+import axios from "axios";
 export default function AddProduct() {
   const [mediaFiles, setMediaFiles] = useState([]); // State for Media Files
   const [coverMediaFiles, setCoverMediaFiles] = useState([]); // State for Cover Media Files
-  const [groupedVariants, setGroupedVariants] = useState({});
   const [thickness, setThickness] = useState("");
+  const [data, setData] = useState([{}]);
   const [size, setSize] = useState("");
-  const [dimensions, setDimensions] = useState([]);
   const [price, setPrice] = useState("");
-  const [editingVariantIndex, setEditingVariantIndex] = useState(null);
-  const [editingThickness, setEditingThickness] = useState("");
   const [variantTable, setVariantTable] = useState("none");
-  const [inchW, setInchW] = useState();
-  const [inchH, setInchH] = useState();
+  const [inchW, setInchW] = useState(0);
+  const [inchH, setInchH] = useState(0);
   const [dimension_inches, setDimension_inches] = useState("");
-  const [cmH, setCmH] = useState();
-  const [cmW, setCmW] = useState();
+  const [cmH, setCmH] = useState(0);
+  const [cmW, setCmW] = useState(0);
   const [dimension_cm, setDimension_cm] = useState("");
-  // Handle adding a new variant
+  const [toggle, setToggle] = useState("");
+  const [variants, setVariants] = useState([]);
+  const [editingVariantIndex, setEditingVariantIndex] = useState(null);
   const handleAddVariant = () => {
-    if (!thickness || !size || !price) {
-      alert("Please fill all fields");
-      return;
-    }
-
     const newVariant = {
-      _id: `${thickness}-${size}`, // Unique ID for the variant
-      attributes: [
-        { name: "categorytypes", value: size },
-        { name: "dimension_inches", value: dimensions },
-      ],
+      thickness,
+      size,
+      dimensionsInch: `${inchW}x${inchH}`,
+      dimensionsCm: `${cmW}x${cmH}`,
+      price,
+    };
+    setVariants([...variants, newVariant]);
+    setVariantTable("block");
+    resetFields();
+  };
+  const LoadCatSubCat = async () => {
+    try {
+      const fetchedData = await axios
+        .get(
+          "https://livon-rest-healthy-backend-26380982364.us-east1.run.app/productdetails"
+        )
+        .then((response) => {
+          return response.data;
+        });
+      setData(fetchedData);
+      console.log(fetchedData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    LoadCatSubCat();
+    console.log(data.map((item) => item.products));
+  }, []);
+  const handleUpdateVariant = () => {
+    const updatedVariants = [...variants];
+    updatedVariants[editingVariantIndex] = {
+      thickness,
+      size,
+      dimensionsInch: `${inchW}x${inchH}`,
+      dimensionsCm: `${cmW}x${cmH}`,
       price,
     };
 
-    setGroupedVariants((prevVariants) => {
-      const updatedVariants = { ...prevVariants };
-      if (!updatedVariants[thickness]) {
-        updatedVariants[thickness] = [];
-      }
-      updatedVariants[thickness].push(newVariant);
-      return updatedVariants;
-    });
+    setVariants(updatedVariants);
+    setEditingVariantIndex(null);
+    resetFields();
+  };
 
-    // Clear form after adding
+  const handleEditVariant = (index) => {
+    const variant = variants[index];
+    setThickness(variant.thickness);
+    setSize(variant.size);
+    const [widthInch, heightInch] = variant.dimensionsInch.split("x");
+    setInchW(widthInch);
+    setInchH(heightInch);
+    const [widthCm, heightCm] = variant.dimensionsCm.split("x");
+    setCmW(widthCm);
+    setCmH(heightCm);
+    setPrice(variant.price);
+    setEditingVariantIndex(index);
+  };
+
+  const handleDeleteVariant = (index) => {
+    setVariants(variants.filter((_, i) => i !== index));
+  };
+
+  const resetFields = () => {
     setThickness("");
     setSize("");
-    setDimensions([]);
+    setInchW("");
+    setInchH("");
+    setCmW("");
+    setCmH("");
     setPrice("");
-  };
-
-  // Handle editing a variant
-  const handleEditVariant = (thickness, index) => {
-    const variant = groupedVariants[thickness][index];
-
-    // Get the attributes correctly
-    const variantThickness = thickness; // Set thickness directly
-    const variantSize = variant.attributes?.find(
-      (attr) => attr.name === "categorytypes"
-    )?.value;
-    const variantDimensions =
-      variant.attributes?.find((attr) => attr.name === "dimension_inches")
-        ?.value || []; // Ensure it's always an array
-    const variantPrice = variant.price;
-
-    // Set the form fields to the variant's values
-    setThickness(variantThickness); // Set thickness directly
-    setSize(variantSize || "");
-    setDimensions(variantDimensions);
-    setPrice(variantPrice || "");
-
-    setEditingVariantIndex(index); // Mark as editing this variant by index
-    setEditingThickness(thickness); // Store the thickness for updating
-  };
-
-  // Handle updating only the thickness of the variant
-  const handleUpdateVariant = () => {
-    if (!thickness) {
-      alert("Please provide a thickness");
-      return;
-    }
-
-    // Check if the variant to be updated exists
-    if (editingVariantIndex === null || editingThickness === "") {
-      alert("No variant selected for update");
-      return;
-    }
-
-    setGroupedVariants((prevVariants) => {
-      const updatedVariants = { ...prevVariants };
-
-      // Find the variant using thickness and index
-      const updatedVariant =
-        updatedVariants[editingThickness][editingVariantIndex];
-
-      // Only update the thickness, leave the rest intact
-      updatedVariant._id = `${thickness}-${updatedVariant._id.split("-")[1]}`; // Update _id based on new thickness
-      updatedVariants[editingThickness][editingVariantIndex] = updatedVariant;
-
-      return updatedVariants;
-    });
-
-    // Clear form after update
-    setThickness("");
-    setSize("");
-    setDimensions([]);
-    setPrice("");
-    setEditingVariantIndex(null); // Reset editing state
-    setEditingThickness(""); // Reset thickness
-  };
-
-  // Handle removing a variant
-  const handleRemoveVariant = (variantId, thickness) => {
-    setGroupedVariants((prevVariants) => {
-      const updatedVariants = { ...prevVariants };
-      updatedVariants[thickness] = updatedVariants[thickness].filter(
-        (variant) => variant._id !== variantId
-      );
-      return updatedVariants;
-    });
   };
 
   // Handle file upload for Media (multiple files)
@@ -170,53 +142,47 @@ export default function AddProduct() {
 
   const handleInchW = (e) => {
     let value = e.target.value;
-    if (!value || isNaN(value) || value <= 0) {
-      alert("Please enter a valid positive value for width in inches.");
-      return;
-    }
-    let cmValue = Math.floor(value * 2.54); // Convert inches to cm
+    let cmValue = Math.floor(Math.round(value * 2.54 * 100) / 100); // Rounds to two decimal places
     setInchW(value);
     setCmW(cmValue);
   };
-  
-  const handleInchH = (e) => {
+  const handleinchH = (e) => {
     let value = e.target.value;
-    if (!value || isNaN(value) || value <= 0) {
-      alert("Please enter a valid positive value for height in inches.");
-      return;
-    }
-    let cmValue = Math.floor(value * 2.54); // Convert inches to cm
+    let cmValue = Math.floor(Math.round(value * 2.54 * 100) / 100); // Rounds to two decimal places
     setInchH(value);
     setCmH(cmValue);
   };
-  
   const handleCmW = (e) => {
     let value = e.target.value;
-    if (!value || isNaN(value) || value <= 0) {
-      alert("Please enter a valid positive value for width in centimeters.");
-      return;
-    }
-    let inchValue = Math.floor(value / 2.54); // Convert cm to inches
-    setCmW(value);
+    let inchValue = Math.floor(value / 2.54); // Convert centimeters to inches and round down to the nearest integer
+    setCmW(value); // Set the original value in centimeters
     setInchW(inchValue);
   };
-  
   const handleCmH = (e) => {
     let value = e.target.value;
-    if (!value || isNaN(value) || value <= 0) {
-      alert("Please enter a valid positive value for height in centimeters.");
-      return;
-    }
-    let inchValue = Math.floor(value / 2.54); // Convert cm to inches
-    setCmH(value);
-    setInchH(inchValue);
+    let inchValue = Math.floor(value / 2.54); // Convert centimeters to inches and round down to the nearest integer
+    setCmH(value); // Set the original value in centimeters
+    setInchH(inchValue); // Set the converted value in inches
   };
-  
   function setDimensionInches() {
-    setDimension_inches(`${inchW} * ${inchH}`);
-    setDimension_cm(`${cmW} * ${cmH}`);
-    console.log(dimension_inches);
-    console.log(dimension_cm);
+    if (
+      inchH <= 0 &&
+      inchW <= 0 &&
+      inchW <= 0 &&
+      inchH <= 0 &&
+      thickness === "" &&
+      size === "" &&
+      price === ""
+    ) {
+      alert("Please enter valid dimensions");
+      setToggle("");
+    } else {
+      setDimension_inches(`${inchW} * ${inchH}`);
+      setDimension_cm(`${cmW} * ${cmH}`);
+      setToggle("modal");
+      console.log(dimension_inches);
+      console.log(dimension_cm);
+    }
   }
 
   return (
@@ -492,20 +458,12 @@ export default function AddProduct() {
                                 <input
                                   className="form-control"
                                   value={inchH}
-                                  onChange={handleInchH}
+                                  onChange={handleinchH}
                                   type="number"
                                 />
                               </div>
                             </div>
                           </div>
-                          {/* <Form.Control
-                            type="text"
-                            value={dimensions.join(", ")}
-                            onChange={(e) =>
-                              setDimensions(e.target.value.split(","))
-                            }
-                            placeholder="Enter dimensions separated by commas"
-                          /> */}
                         </div>
                       </div>
                     </Form.Group>
@@ -545,14 +503,6 @@ export default function AddProduct() {
                               </div>
                             </div>
                           </div>
-                          {/* <Form.Control
-                            type="text"
-                            value={dimensions.join(", ")}
-                            onChange={(e) =>
-                              setDimensions(e.target.value.split(","))
-                            }
-                            placeholder="Enter dimensions separated by commas"
-                          /> */}
                         </div>
                       </div>
                     </Form.Group>
@@ -579,6 +529,7 @@ export default function AddProduct() {
                     </Form.Group>
 
                     {/* Submit Button */}
+
                     <div className="flex justify-center mt-4 mb-2">
                       <Button
                         variant="primary"
@@ -586,12 +537,9 @@ export default function AddProduct() {
                         onClick={() => {
                           if (editingVariantIndex !== null) {
                             handleUpdateVariant();
-                            setDimensionInches();
                           } else {
                             handleAddVariant();
-                            setDimensionInches();
                           }
-                          setVariantTable("block"); // Add your new functionality here
                         }}
                       >
                         {editingVariantIndex !== null
@@ -732,68 +680,51 @@ export default function AddProduct() {
           </div>
         </Container>
       </div>
-      {/* <Row className={`mt-5 d-${variantTable}`}>
+      <Row className={`mt-5 d-${variantTable}`}>
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th>Thickness</th>
+              <th>#</th>
+              <th>Thickness (Inches)</th>
               <th>Size</th>
-              <th>Dimensions</th>
+              <th>Dimensions (Inches)</th>
+              <th>Dimensions (Cm)</th>
               <th>Price</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {Object.keys(groupedVariants).map((thickness) =>
-              groupedVariants[thickness].map((variant, index) => {
-                const size = variant.attributes?.find(
-                  (attr) => attr.name === "categorytypes"
-                )?.value;
-                const price = variant.price;
-                const dimensions =
-                  variant.attributes
-                    ?.filter((attr) => attr.name === "dimension_inches")
-                    .map((attr) => attr.value)
-                    .flat() || []; // Ensure dimensions is always an array
-
-                return (
-                  <tr key={variant._id}>
-                    <td>{thickness} inches</td>
-                    <td>{size}</td>
-                    <td>
-                      {Array.isArray(dimensions) && dimensions.length > 0
-                        ? dimensions.map((dim, idx) => (
-                            <div key={idx}>{dim}</div>
-                          ))
-                        : "No dimensions available"}
-                    </td>
-                    <td>{price}</td>
-                    <td>
-                      <Button
-                        variant="warning"
-                        onClick={() => handleEditVariant(thickness, index)}
-                        className="me-2"
-                        data-bs-target="#variant-modal"
-                        data-bs-toggle="modal"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="danger"
-                        onClick={() =>
-                          handleRemoveVariant(variant._id, thickness)
-                        }
-                      >
-                        Remove
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+            {variants.map((variant, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{variant.thickness}</td>
+                <td>{variant.size}</td>
+                <td>{variant.dimensionsInch}</td>
+                <td>{variant.dimensionsCm}</td>
+                <td>{variant.price}</td>
+                <td>
+                  <Button
+                    variant="warning"
+                    size="sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#variant-modal"
+                    onClick={() => handleEditVariant(index)}
+                  >
+                    Edit
+                  </Button>{" "}
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => handleDeleteVariant(index)}
+                  >
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
-      </Row> */}
+      </Row>
     </div>
   );
 }
