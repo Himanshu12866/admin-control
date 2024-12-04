@@ -33,8 +33,8 @@ export default function AddProduct() {
   const [coverImage, setCoverImage] = useState(null);
   const [covers, setCovers] = useState([]);
   const [coverTable, setCoverTable] = useState("none");
-  const [editIndex, setEditIndex] = useState(null); // Track the index being edited
-  const [imageforCover, setImageForCover] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+
   const [updatedCoverTxt, setUpdatedCoverTxt] = useState("Add Cover");
 
   const handleAddVariant = () => {
@@ -258,33 +258,46 @@ export default function AddProduct() {
     const newCover = {
       coverName,
       coverNote,
-      coverImage: coverImage ? coverImage.name : null,
+      coverImage: coverImage ? coverImage.name : null, // Only save the image name
       coverDescription,
     };
-
+    setCoverTable("block");
+    setUpdatedCoverTxt("Add Cover")
     if (editIndex !== null) {
       // Edit existing cover
       setCovers((prevCovers) => {
         const updatedCovers = [...prevCovers];
         updatedCovers[editIndex] = newCover;
-        console.log("Updated Covers:", updatedCovers);
-
+      
         return updatedCovers;
+      });
+      setPreviewUrls((prevUrls) => {
+        const updatedUrls = [...prevUrls];
+        updatedUrls[editIndex] = coverImage
+          ? URL.createObjectURL(coverImage)
+          : null;
+        return updatedUrls;
       });
     } else {
       // Add new cover
-      setCovers((prevCovers) => {
-        const updatedCovers = [...prevCovers, newCover];
-        console.log("New Cover Added:", updatedCovers);
-        setCoverTable("block");
-        setUpdatedCoverTxt("Add Cover");
-        return updatedCovers;
-      });
+      setCovers((prevCovers) => [...prevCovers, newCover]);
+      setPreviewUrls((prevUrls) => [
+        ...prevUrls,
+        coverImage ? URL.createObjectURL(coverImage) : null,
+      ]);
     }
 
     // Reset form fields
     resetFormFields();
   };
+
+  const handleDelete = (index) => {
+    setCovers((prevCovers) => prevCovers.filter((_, i) => i !== index));
+    setPreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+  };
+
+  // Separate state for preview URLs
+  const [previewUrls, setPreviewUrls] = useState([]);
 
   // Reset Form Fields
   const resetFormFields = () => {
@@ -313,15 +326,6 @@ export default function AddProduct() {
     setCoverDescription(coverToEdit.coverDescription);
     setCoverImage(coverToEdit.coverImage);
     setUpdatedCoverTxt("Edit Cover");
-  };
-
-  // Delete Cover
-  const handleDelete = (index) => {
-    setCovers((prevCovers) => {
-      const updatedCovers = prevCovers.filter((_, i) => i !== index);
-      console.log("Covers after delete:", updatedCovers);
-      return updatedCovers;
-    });
   };
 
   useEffect(() => {
@@ -362,6 +366,21 @@ export default function AddProduct() {
                       type="text"
                       name="title"
                       placeholder="Product title"
+                    />
+                  </Form.Group>
+                  <Form.Group className="mt-2">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      name="descriptions"
+                      placeholder="product Description"
+                      className="description-textarea"
+                      style={{
+                        height: "auto",
+                        whiteSpace: "pre-wrap",
+                        paddingTop: "10px",
+                        lineHeight: "40px",
+                      }}
                     />
                   </Form.Group>
                   {/* Category and Subcategory */}
@@ -408,21 +427,7 @@ export default function AddProduct() {
                       </div>
                     </Form.Group>
                   </div>
-                  <Form.Group className="mt-2">
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      name="descriptions"
-                      placeholder="product Description"
-                      className="description-textarea"
-                      style={{
-                        height: "auto",
-                        whiteSpace: "pre-wrap",
-                        paddingTop: "10px",
-                        lineHeight: "40px",
-                      }}
-                    />
-                  </Form.Group>
+                 
                 </form>
 
                 {/* Media Section */}
@@ -935,6 +940,7 @@ export default function AddProduct() {
         </Table>
       </Row>
       <Row className={`mt-5 d-${coverTable} flex justify-center`}>
+        <h3>Varinats Table</h3>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -954,13 +960,13 @@ export default function AddProduct() {
                 <td>{item.coverNote}</td>
                 <td>{item.coverDescription}</td>
                 <td>
-                  {item.coverImage && (
+                  {previewUrls[index] && (
                     <img
-                      src={item.coverImage}
-                      alt={item.coverImage}
+                      src={previewUrls[index]}
+                      alt="Cover Preview"
                       style={{
-                        width: "150px",
-                        height: "50px",
+                        width: "100%",
+                        height: "40px",
                         objectFit: "cover",
                         borderRadius: "5px",
                       }}

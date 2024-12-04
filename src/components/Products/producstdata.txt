@@ -1,519 +1,276 @@
-<div>
+ const [coverName, setCoverName] = useState("");
+  const [coverNote, setCoverNote] = useState("");
+  const [coverDescription, setCoverDescription] = useState("");
+  const [coverImage, setCoverImage] = useState(null);
+  const [covers, setCovers] = useState([]);
+  const [coverTable, setCoverTable] = useState("none");
+  const [editIndex, setEditIndex] = useState(null);
+
+   const displayCoverData = () => {
+    const newCover = {
+      coverName,
+      coverNote,
+      coverImage: coverImage ? coverImage.name : null,
+      coverDescription,
+    };
+
+    if (editIndex !== null) {
+      // Edit existing cover
+      setCovers((prevCovers) => {
+        const updatedCovers = [...prevCovers];
+        updatedCovers[editIndex] = newCover;
+        console.log("Updated Covers:", updatedCovers);
+
+        return updatedCovers;
+      });
+    } else {
+      // Add new cover
+      setCovers((prevCovers) => {
+        const updatedCovers = [...prevCovers, newCover];
+        console.log("New Cover Added:", updatedCovers);
+        setCoverTable("block");
+        setUpdatedCoverTxt("Add Cover");
+        return updatedCovers;
+      });
+    }
+
+    // Reset form fields
+    resetFormFields();
+  };
+
+  // Reset Form Fields
+  const resetFormFields = () => {
+    setCoverDescription("");
+    setCoverImage(null);
+    setCoverName("");
+    setCoverNote("");
+    setEditIndex(null); // Reset edit index
+    setCoverMediaFiles([]); // Clear media file previews
+  };
+  const handleResetCover = () => {
+    setCoverDescription("");
+    setCoverImage(null);
+    setCoverName("");
+    setCoverNote("");
+    setEditIndex(null); // Reset edit index
+    setCoverMediaFiles([]);
+  };
+
+  // Edit Cover
+  const handleEdit = (index) => {
+    const coverToEdit = covers[index];
+    setEditIndex(index);
+    setCoverName(coverToEdit.coverName);
+    setCoverNote(coverToEdit.coverNote);
+    setCoverDescription(coverToEdit.coverDescription);
+    setCoverImage(coverToEdit.coverImage);
+    setUpdatedCoverTxt("Edit Cover");
+  };
+
+  // Delete Cover
+  const handleDelete = (index) => {
+    setCovers((prevCovers) => {
+      const updatedCovers = prevCovers.filter((_, i) => i !== index);
+      console.log("Covers after delete:", updatedCovers);
+      return updatedCovers;
+    });
+  };
+
+  useEffect(() => {
+    console.log("Covers state changed:", covers);
+  }, [covers])
+  <div className="modal-dialog modal-dialog-centered modal-lg">
+              <div className="modal-content">
+                {/* Modal Header */}
+                <div className="modal-header">
                   <h5>Covers Information</h5>
+                  <button
+                    type="button"
+                    className="btn btn-close"
+                    onClick={handleResetCover}
+                    data-bs-dismiss="modal"
+                  ></button>
                 </div>
-                <hr />
-                <div className="cover-details mt-4">
-                  {/* Cover Details */}
-                  <Form.Group className="mt-3">
-                    <Form.Label>Cover Name</Form.Label>
-                    <Form.Control type="text" />
-                  </Form.Group>
-                  <Form.Group className="mt-3">
-                    <Form.Label>Cover Note</Form.Label>
+
+                {/* Modal Body */}
+                <div className="modal-body pb-5">
+                  {/* Cover Name */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="font-medium">Cover Name</Form.Label>
                     <Form.Control
                       type="text"
+                      onChange={(e) => setCoverName(e.target.value)}
+                      value={coverName}
+                      placeholder="Enter cover name"
                     />
                   </Form.Group>
-                  <Form.Group className="mt-4">
-                    <Form.Label>Description</Form.Label>
+
+                  {/* Cover Note */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="font-medium">Cover Note</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={coverNote}
+                      onChange={(e) => setCoverNote(e.target.value)}
+                      placeholder="Enter cover note"
+                    />
+                  </Form.Group>
+
+                  {/* Description */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="font-medium">Description</Form.Label>
                     <Form.Control
                       as="textarea"
+                      placeholder="Enter description"
+                      value={coverDescription}
+                      onChange={(e) => setCoverDescription(e.target.value)}
                       style={{
-                        height: '100px',
-                        whiteSpace: 'pre-wrap',
-                        paddingTop: '30px',
-                        lineHeight: '40px'
+                        height: "60px",
+                        whiteSpace: "pre-wrap",
+                        paddingTop: "10px",
+                        lineHeight: "1.5",
                       }}
                     />
                   </Form.Group>
-                  {/* Drag and drop for Cover Image */}
-                  <Row className=" mt-5">
-                    <div>
-                      <h5>Cover Media</h5>
-                    </div>
-                    <div className="preview-images">
-                      {coverMediaFiles.map((file, index) => (
-                        <div
-                          key={index}
-                          className="preview-container mt-3 position-relative"
-                          style={{ display: "inline-block", marginRight: "10px" }}
-                        >
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt="Uploaded Preview"
-                            style={{
-                              width: "100px", // Adjust the preview size
-                              height: "auto", // Adjust the preview size
-                              objectFit: "cover",
-                              borderRadius: "10px",
-                            }}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTimes}
-                            className="position-absolute top-0 end-0 p-1"
-                            style={{
-                              cursor: "pointer",
-                              color: "red",
-                              fontSize: "1.2rem",
-                            }}
-                            onClick={() => removeCoverMediaFile(index)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <Form.Group>
+
+                  {/* Cover Media Section */}
+                  <div className="mb-4">
+                    <h5 className="font-medium">Cover Image</h5>
+                  </div>
+                  <div className="preview-images mb-4">
+                    {coverMediaFiles.map((file, index) => (
                       <div
-                        className="file-upload"
-                        onDrop={(e) => handleDrop(e, true)}
-                        onDragOver={handleDragOver}
-                        onClick={() => document.getElementById('cover-file-input').click()} // Open the file dialog on click
+                        key={index}
+                        className="preview-container position-relative"
                         style={{
-                          width: "100%",
-                          height: "200px",
-                          border: "2px dashed #ccc",
-                          borderRadius: "10px",
-                          textAlign: "center",
-                          paddingTop: "70px",
-                          cursor: "pointer",
-                          backgroundColor: "rgb(248 250 253)",
+                          display: "inline-block",
+                          marginRight: "5px",
+                          marginLeft: "10px",
+                          padding: "5px",
                         }}
                       >
-                        <p>Drag and drop your file here</p>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          style={{ display: "none" }}
-                          id="cover-file-input"
-                          onChange={handleCoverMediaUpload}
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt="Uploaded Preview"
+                          style={{
+                            width: "100px", // Adjust the preview size
+                            height: "auto", // Adjust the preview size
+                            objectFit: "cover",
+                            borderRadius: "10px",
+                          }}
                         />
-                        <p>or</p>
-                        <label
-                          htmlFor="cover-file-input"
-                          className="upload-button"
-                        >
-                          Browse File
-                        </label>
+                        <FontAwesomeIcon
+                          icon={faTimes}
+                          className="position-absolute top-0 end-0 p-1"
+                          style={{
+                            cursor: "pointer",
+                            color: "red",
+                            fontSize: "1.2rem",
+                          }}
+                          onClick={() => removeCoverMediaFile(index)}
+                        />
                       </div>
-                    </Form.Group>
-                  </Row>
-                </div>
+                    ))}
+                  </div>
 
-
-Table for variant
-
-
-                  <Row className="mt-5">
-                  <Table striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Thickness</th>
-                        <th>Size</th>
-                        <th>Dimensions</th>
-                        <th>Price</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.keys(groupedVariants).map((thickness) =>
-                        groupedVariants[thickness].map((variant, index) => {
-                          const size = variant.attributes?.find(
-                            (attr) => attr.name === "categorytypes"
-                          )?.value;
-                          const price = variant.price;
-                          const dimensions =
-                            variant.attributes
-                              ?.filter(
-                                (attr) => attr.name === "dimension_inches"
-                              )
-                              .map((attr) => attr.value)
-                              .flat() || []; // Ensure dimensions is always an array
-
-                          return (
-                            <tr key={variant._id}>
-                              <td>{thickness} inches</td>
-                              <td>{size}</td>
-                              <td>
-                                {Array.isArray(dimensions) &&
-                                dimensions.length > 0
-                                  ? dimensions.map((dim, idx) => (
-                                      <div key={idx}>{dim}</div>
-                                    ))
-                                  : "No dimensions available"}
-                              </td>
-                              <td>{price}</td>
-                              <td>
-                                <Button
-                                  variant="warning"
-                                  onClick={() =>
-                                    handleEditVariant(thickness, index)
-                                  }
-                                  className="me-2"
-                                >
-                                  Edit
-                                </Button>
-                                <Button
-                                  variant="danger"
-                                  onClick={() =>
-                                    handleRemoveVariant(variant._id, thickness)
-                                  }
-                                >
-                                  Remove
-                                </Button>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </Table>
-                </Row>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <div className="modal fade" id="variant-modal">
-            <div className="modal-dialog modal-dialog-centered modal-lg">
-              <div className="modal-content">
-                <div className="p-4 modal-header">
-                  <h5>Variants</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <Form>
-                    {/* Thickness Field */}
-                    <Form.Group
-                      controlId="thickness"
-                      className="mb-3 flex justify-between"
+                  {/* Drag and Drop File Upload */}
+                  <Form.Group>
+                    <div
+                      className="file-upload"
+                      onDrop={(e) => handleDrop(e, true)}
+                      onDragOver={handleDragOver}
+                      onClick={() =>
+                        document.getElementById("cover-file-input").click()
+                      }
+                      style={{
+                        width: "100%",
+                        height: "150px",
+                        border: "2px dashed #ccc",
+                        borderRadius: "10px",
+                        textAlign: "center",
+                        paddingTop: "20px",
+                        cursor: "pointer",
+                        backgroundColor: "rgb(248, 250, 253)",
+                      }}
                     >
-                      <div className="row w-100">
-                        <div className="col-4">
-                          <Form.Label>Thickness (inches)</Form.Label>
-                        </div>
-                        <div className="col-8">
-                          <Form.Control
-                            type="number"
-                            className="w-100"
-                            value={thickness}
-                            onChange={(e) => setThickness(e.target.value)}
-                            placeholder="Enter thickness"
-                          />
-                        </div>
-                      </div>
-                    </Form.Group>
-
-                    {/* Size Field */}
-                    <Form.Group
-                      controlId="size"
-                      className="mb-3 flex justify-between"
-                    >
-                      <div className="row w-100">
-                        <div className="col-4">
-                          <Form.Label>Size</Form.Label>
-                        </div>
-                        <div className="col-8">
-                          <Form.Control
-                            type="text"
-                            className="w-100"
-                            value={size}
-                            onChange={(e) => setSize(e.target.value)}
-                            placeholder="Enter size"
-                          />
-                        </div>
-                      </div>
-                    </Form.Group>
-
-                    {/* Dimensions Field */}
-                    <Form.Group
-                      controlId="dimensions"
-                      className="mb-3 flex justify-between"
-                    >
-                      <div className="row w-100">
-                        <div className="col-4">
-                          <Form.Label>Dimensions (In)</Form.Label>
-                        </div>
-                        <div className="col-8">
-                          <div className="row w-100">
-                            <div className="col-5">
-                              <div className="input-group">
-                                <span className="input-group-text">Width</span>
-                                <input
-                                  className="form-control"
-                                  value={inchW}
-                                  onChange={handleInchW}
-                                  type="number"
-                                />
-                              </div>
-                            </div>
-                            <div className="col-2 flex justify-center items-center">
-                              <p className="text-3xl font-medium">*</p>
-                            </div>
-                            <div className="col-5">
-                              <div className="input-group">
-                                <span className="input-group-text">Height</span>
-                                <input
-                                  className="form-control"
-                                  value={inchH}
-                                  onChange={handleInchH}
-                                  type="number"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                       
-                        </div>
-                      </div>
-                    </Form.Group>
-                    <Form.Group
-                      controlId="dimensions"
-                      className="mb-3 flex justify-between"
-                    >
-                      <div className="row w-100">
-                        <div className="col-4">
-                          <Form.Label>Dimensions (Cm)</Form.Label>
-                        </div>
-                        <div className="col-8">
-                          <div className="row w-100">
-                            <div className="col-5">
-                              <div className="input-group">
-                                <span className="input-group-text">Width</span>
-                                <input
-                                  className="form-control"
-                                  value={cmW}
-                                  onChange={handleCmW}
-                                  type="number"
-                                />
-                              </div>
-                            </div>
-                            <div className="col-2 flex justify-center items-center">
-                              <p className="text-3xl font-medium">*</p>
-                            </div>
-                            <div className="col-5">
-                              <div className="input-group">
-                                <span className="input-group-text">Height</span>
-                                <input
-                                  className="form-control"
-                                  value={cmH}
-                                  onChange={handleCmH}
-                                  type="number"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        
-                        </div>
-                      </div>
-                    </Form.Group>
-
-                    {/* Price Field */}
-
-                    <Form.Group
-                      controlId="price"
-                      className="mb-3 flex justify-between"
-                    >
-                      <div className="row w-100">
-                        <div className="col-4">
-                          <Form.Label>Price</Form.Label>
-                        </div>
-                        <div className="col-8">
-                          <Form.Control
-                            type="number"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            placeholder="Enter price"
-                          />
-                        </div>
-                      </div>
-                    </Form.Group>
-
-                    {/* Submit Button */}
-                    <div className="flex justify-center mt-4 mb-2">
-                      <Button
-                        variant="primary"
-                        data-bs-dismiss="modal"
-                        onClick={() => {
-                          if (editingVariantIndex !== null) {
-                            handleUpdateVariant();
-                            setDimensionInches();
-                          } else {
-                            handleAddVariant();
-                            setDimensionInches();
-                          }
-                          setVariantTable("block"); // Add your new functionality here
-                        }}
+                      <p>Drag and drop your file here</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        style={{ display: "none" }}
+                        id="cover-file-input"
+                        onChange={handleCoverMediaUpload}
+                      />
+                      <p>or</p>
+                      <label
+                        htmlFor="cover-file-input"
+                        className="upload-button"
                       >
-                        {editingVariantIndex !== null
-                          ? "Update Variant"
-                          : "Add Variant"}
-                      </Button>
+                        Browse File
+                      </label>
                     </div>
-                  </Form>
+                  </Form.Group>
+                  <button
+                    onClick={displayCoverData}
+                    data-bs-dismiss="modal"
+                    className="btn btn-dark mt-3 w-100"
+                  >
+                    {updatedCoverTxt}
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            const handleInchW = (e) => {
-    let value = e.target.value;
-  
-    // Allow the user to type freely but validate on non-empty inputs
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setInchW(value); // Still allow the input to be shown
-      return; // Do not proceed further for invalid inputs
-    }
-  
-    let cmValue = Math.floor(parseFloat(value) * 2.54); // Convert inches to cm
-    setInchW(value); // Set the input value
-    setCmW(cmValue); // Update the corresponding cm value
-  };
-  
-  const handleInchH = (e) => {
-    let value = e.target.value;
-  
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setInchH(value);
-      return;
-    }
-  
-    let cmValue = Math.floor(parseFloat(value) * 2.54);
-    setInchH(value);
-    setCmH(cmValue);
-  };
-  
-  const handleCmW = (e) => {
-    let value = e.target.value;
-  
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setCmW(value);
-      return;
-    }
-  
-    let inchValue = Math.floor(parseFloat(value) / 2.54);
-    setCmW(value);
-    setInchW(inchValue);
-  };
-  
-  const handleCmH = (e) => {
-    let value = e.target.value;
-  
-    if (!value || isNaN(value) || parseFloat(value) <= 0) {
-      setCmH(value);
-      return;
-    }
-  
-    let inchValue = Math.floor(parseFloat(value) / 2.54);
-    setCmH(value);
-    setInchH(inchValue);
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-  const handleEditVariant = (thickness, index) => {
-    const variant = groupedVariants[thickness][index];
-
-    // Get the attributes correctly
-    const variantThickness = thickness; // Set thickness directly
-    const variantSize = variant.attributes?.find(
-      (attr) => attr.name === "categorytypes"
-    )?.value;
-    const variantDimensions =
-      variant.attributes?.find((attr) => attr.name === "dimension_inches")
-        ?.value || []; // Ensure it's always an array
-    const variantPrice = variant.price;
-
-    // Set the form fields to the variant's values
-    setThickness(variantThickness); // Set thickness directly
-    setSize(variantSize || "");
-    setDimensions(variantDimensions);
-    setPrice(variantPrice || "");
-
-    setEditingVariantIndex(index); // Mark as editing this variant by index
-    setEditingThickness(thickness); // Store the thickness for updating
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const handleUpdateVariant = () => {
-    if (!thickness) {
-      alert("Please provide a thickness");
-      return;
-    }
-
-    // Check if the variant to be updated exists
-    if (editingVariantIndex === null || editingThickness === "") {
-      alert("No variant selected for update");
-      return;
-    }
-
-    setGroupedVariants((prevVariants) => {
-      const updatedVariants = { ...prevVariants };
-
-      // Find the variant using thickness and index
-      const updatedVariant =
-        updatedVariants[editingThickness][editingVariantIndex];
-
-      // Only update the thickness, leave the rest intact
-      updatedVariant._id = `${thickness}-${updatedVariant._id.split("-")[1]}`; // Update _id based on new thickness
-      updatedVariants[editingThickness][editingVariantIndex] = updatedVariant;
-
-      return updatedVariants;
-    });
-
-    // Clear form after update
-    setThickness("");
-    setSize("");
-    setDimensions([]);
-    setPrice("");
-    setEditingVariantIndex(null); // Reset editing state
-    setEditingThickness(""); // Reset thickness
-  };
+            <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cover Name</th>
+              <th>Cover Note</th>
+              <th>Cover Description</th>
+              <th>Preview</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {covers.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{item.coverName}</td>
+                <td>{item.coverNote}</td>
+                <td>{item.coverDescription}</td>
+                <td>
+                  {item.coverImage && (
+                    <img
+                      src={URL.createObjectURL(item.coverImage)}
+                      alt={item.coverImage}
+                      style={{
+                        width: "150px",
+                        height: "50px",
+                        objectFit: "cover",
+                        borderRadius: "5px",
+                      }}
+                    />
+                  )}
+                </td>
+                <td>
+                  <button
+                    className="btn btn-success mr-4"
+                    data-bs-target="#cover-modal"
+                    data-bs-toggle="modal"
+                    onClick={() => handleEdit(index)}
+                  >
+                    <span className="bi bi-pen"></span>
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(index)}
+                  >
+                    <span className="bi bi-trash"></span>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
