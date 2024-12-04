@@ -896,14 +896,7 @@ export default function AddProduct() {
                 <td>{item.coverName}</td>
                 <td>{item.coverNote}</td>
                 <td>{item.coverDescription}</td>
-                <td>
-                 {
-                  coverMediaFiles.map(item  => 
-
-                    <img src={item.file} />
-                  )
-                 }
-                </td>
+                <td>{item.coverImage}</td>
                 <td>
                   <button className="btn btn-success mr-4"><span className="bi bi-pen"></span></button>
                   <button className="btn btn-danger "><span className="bi bi-trash"></span></button>
