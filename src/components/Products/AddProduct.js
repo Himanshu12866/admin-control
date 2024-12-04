@@ -12,6 +12,7 @@ export default function AddProduct() {
   const [thickness, setThickness] = useState("");
   const [data, setData] = useState([]); // State to store fetched data
   const [categories, setCategories] = useState([]); // State to store unique categories
+  const [subCategories, setSubCategories] = useState([]); // State to store unique categories
   const [size, setSize] = useState("");
   const [price, setPrice] = useState("");
   const [variantTable, setVariantTable] = useState("none");
@@ -24,6 +25,9 @@ export default function AddProduct() {
   const [toggle, setToggle] = useState("");
   const [variants, setVariants] = useState([]);
   const [editingVariantIndex, setEditingVariantIndex] = useState(null);
+  const [dnewCat, setDnewCat] = useState("none");
+  const [dnewSubCat, setDnewSubCat] = useState("none");
+
   const handleAddVariant = () => {
     const newVariant = {
       thickness,
@@ -31,7 +35,9 @@ export default function AddProduct() {
       dimensionsInch: `${inchW}x${inchH}`,
       dimensionsCm: `${cmW}x${cmH}`,
       price,
+      
     };
+    
     setVariants([...variants, newVariant]);
     setVariantTable("block");
     resetFields();
@@ -43,8 +49,9 @@ export default function AddProduct() {
           "https://livon-rest-healthy-backend-26380982364.us-east1.run.app/productdetails"
         )
         .then((response) => {
-          setData(response.data);
-        }); // Store fetched data in state
+          return response.data;
+        });
+      setData(fetchedData[0].products);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -52,9 +59,13 @@ export default function AddProduct() {
 
   // Extract unique categories from data
   const extractCategories = (data) => {
-    let products = data.map(item => item.products)
-    console.log(products)
-    const uniqueCategories = [...new Set(products.map((item) => item.category))]; // Create unique category list
+    // console.log(fetchedData)
+
+    const uniqueCategories = [...new Set(data.map((item) => item.category))]; // Create unique category list
+    const uniqueSubCategories = [
+      ...new Set(data.map((item) => item.subcategory)),
+    ];
+    setSubCategories(uniqueSubCategories);
     setCategories(uniqueCategories); // Store unique categories in state
     console.log("Unique Categories:", uniqueCategories); // Log unique categories
   };
@@ -62,7 +73,7 @@ export default function AddProduct() {
   // Fetch data when the component mounts
   useEffect(() => {
     LoadCatSubCat();
-    console.log(data)
+    console.log(data);
   }, []);
 
   // Extract categories when data is updated
@@ -102,7 +113,14 @@ export default function AddProduct() {
   };
 
   const handleDeleteVariant = (index) => {
-    setVariants(variants.filter((_, i) => i !== index));
+    if(variants.length !== 1 ){
+      setVariants(variants.filter((_, i) => i !== index))
+    }
+    else{
+      setVariants(variants.filter((_, i) => i !== index))
+      setVariantTable("none");
+    }
+
   };
 
   const resetFields = () => {
@@ -202,6 +220,23 @@ export default function AddProduct() {
     }
   }
 
+  // fucntion for adding new categories and subcategories
+
+  const AddNewCat = (e) => {
+    if (e.target.value === "Add New Category") {
+      setDnewCat("block");
+    } else {
+      setDnewCat("none");
+    }
+  };
+  const AddNewSubCat = (e) => {
+    if (e.target.value === "Add New Subcategory") {
+      setDnewSubCat("block");
+    } else {
+      setDnewSubCat("none");
+    }
+  };
+
   return (
     <div>
       <div className="product-details">
@@ -242,24 +277,45 @@ export default function AddProduct() {
                   <div className="row mt-1">
                     <Form.Group as={Col} md="6">
                       <Form.Label>Category</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="category"
-                        placeholder="Category"
-                      />
-                      <select>
-                        {categories.map((category, index) => (
-                          <option key={index}>{category?.category}</option>
+
+                      <select className="form-select" onChange={AddNewCat}>
+                        <option value="1">Select Categories</option>
+                        {categories.map((item, index) => (
+                          <option key={index} value={item}>{item}</option>
                         ))}
+                        <option>Add New Category</option>
                       </select>
+                      <div className={`d-${dnewCat} my-2`}>
+                        <input
+                          className="form-control"
+                          style={{ padding: "-5px" }}
+                          type="text"
+                          name="category"
+                          placeholder="Add New Category"
+                        />
+                      </div>
                     </Form.Group>
                     <Form.Group as={Col} md="6">
                       <Form.Label>Subcategory</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="subcategory"
-                        placeholder="Subcategory"
-                      />
+                      <select className="form-select" onChange={AddNewSubCat}>
+                        <option value="1">Select Subcategories</option>
+                        {subCategories.map((item, index) => (
+                          <option key={index}>{item}</option>
+                        ))}
+                        <option>
+                          Add New Subcategory
+                        </option>
+                        
+                      </select>
+                      <div className={`d-${dnewSubCat} my-2`}>
+                          <input
+                            className="form-control"
+                            style={{ padding: "-5px" }}
+                            type="text"
+                            name="subcategory"
+                            placeholder="Add New SubCategory"
+                          />
+                        </div>
                     </Form.Group>
                   </div>
                   <Form.Group className="mt-2">
