@@ -27,6 +27,12 @@ export default function AddProduct() {
   const [editingVariantIndex, setEditingVariantIndex] = useState(null);
   const [dnewCat, setDnewCat] = useState("none");
   const [dnewSubCat, setDnewSubCat] = useState("none");
+  const [coverName, setCoverName] = useState("");
+  const [coverNote, setCoverNote] = useState("");
+  const [coverDescription, setCoverDescription] = useState("");
+  const [coverImage, setCoverImage] = useState(null);
+  const [covers, setCovers] = useState([]);
+  const [coverTable , setCoverTable] = useState("none")
 
   const handleAddVariant = () => {
     const newVariant = {
@@ -35,9 +41,8 @@ export default function AddProduct() {
       dimensionsInch: `${inchW}x${inchH}`,
       dimensionsCm: `${cmW}x${cmH}`,
       price,
-      
     };
-    
+
     setVariants([...variants, newVariant]);
     setVariantTable("block");
     resetFields();
@@ -113,14 +118,12 @@ export default function AddProduct() {
   };
 
   const handleDeleteVariant = (index) => {
-    if(variants.length === 1 ){
-      setVariants(variants.filter((_, i) => i !== index))
+    if (variants.length === 1) {
+      setVariants(variants.filter((_, i) => i !== index));
       setVariantTable("none");
+    } else {
+      setVariants(variants.filter((_, i) => i !== index));
     }
-    else{
-      setVariants(variants.filter((_, i) => i !== index))
-    }
-
   };
 
   const resetFields = () => {
@@ -142,6 +145,10 @@ export default function AddProduct() {
   // Handle file upload for Cover Media (multiple files)
   const handleCoverMediaUpload = (event) => {
     const files = Array.from(event.target.files);
+    let imageFile = event.target.files[0];
+    if (imageFile) {
+      setCoverImage(imageFile); // Set the file in the local state
+    }
     setCoverMediaFiles((prevFiles) => [...prevFiles, ...files]);
   };
 
@@ -165,6 +172,11 @@ export default function AddProduct() {
       setCoverMediaFiles((prevFiles) => [...prevFiles, ...files]);
     } else {
       setMediaFiles((prevFiles) => [...prevFiles, ...files]);
+    }
+
+    let file = event.dataTransfer.files[0]; // Get the first dropped file
+    if (file) {
+      setCoverImage(file); // Set the file in the local state
     }
   };
 
@@ -237,6 +249,36 @@ export default function AddProduct() {
     }
   };
 
+  // Cover Function
+
+  const displayCoverData = () => {
+    const newCover = {
+      coverName,
+      coverNote,
+      coverImage: coverImage ? coverImage.name : null, // Handle null cases
+      coverDescription,
+    };
+
+    // Add new cover to the state
+    setCovers((prevCovers) => {
+      const updatedCovers = [...prevCovers, newCover];
+      console.log("Updated Covers:", updatedCovers); // Log updated covers here
+      setCoverTable("block")
+      return updatedCovers;
+    });
+
+    // Reset form fields
+    setCoverDescription("");
+    setCoverImage(null);
+    setCoverName("");
+    setCoverNote("");
+    setCoverMediaFiles([]);
+  };
+
+  useEffect(() => {
+    console.log("Covers state changed:", covers);
+  }, [covers]); // Logs whenever covers state changes
+
   return (
     <div>
       <div className="product-details">
@@ -281,7 +323,9 @@ export default function AddProduct() {
                       <select className="form-select" onChange={AddNewCat}>
                         <option value="1">Select Categories</option>
                         {categories.map((item, index) => (
-                          <option key={index} value={item}>{item}</option>
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
                         ))}
                         <option>Add New Category</option>
                       </select>
@@ -302,20 +346,17 @@ export default function AddProduct() {
                         {subCategories.map((item, index) => (
                           <option key={index}>{item}</option>
                         ))}
-                        <option>
-                          Add New Subcategory
-                        </option>
-                        
+                        <option>Add New Subcategory</option>
                       </select>
                       <div className={`d-${dnewSubCat} my-2`}>
-                          <input
-                            className="form-control"
-                            style={{ padding: "-5px" }}
-                            type="text"
-                            name="subcategory"
-                            placeholder="Add New SubCategory"
-                          />
-                        </div>
+                        <input
+                          className="form-control"
+                          style={{ padding: "-5px" }}
+                          type="text"
+                          name="subcategory"
+                          placeholder="Add New SubCategory"
+                        />
+                      </div>
                     </Form.Group>
                   </div>
                   <Form.Group className="mt-2">
@@ -470,7 +511,9 @@ export default function AddProduct() {
                     >
                       <div className="row w-100">
                         <div className="col-4">
-                          <Form.Label>Thickness (inches)</Form.Label>
+                          <Form.Label className="font-medium">
+                            Thickness (inches)
+                          </Form.Label>
                         </div>
                         <div className="col-8">
                           <Form.Control
@@ -491,7 +534,7 @@ export default function AddProduct() {
                     >
                       <div className="row w-100">
                         <div className="col-4">
-                          <Form.Label>Size</Form.Label>
+                          <Form.Label className="font-medium">Size</Form.Label>
                         </div>
                         <div className="col-8">
                           <Form.Control
@@ -512,13 +555,17 @@ export default function AddProduct() {
                     >
                       <div className="row w-100">
                         <div className="col-4">
-                          <Form.Label>Dimensions (In)</Form.Label>
+                          <Form.Label className="font-medium">
+                            Dimensions (In)
+                          </Form.Label>
                         </div>
                         <div className="col-8">
                           <div className="row w-100">
                             <div className="col-5">
                               <div className="input-group">
-                                <span className="input-group-text">Width</span>
+                                <span className="input-group-text font-medium">
+                                  Width
+                                </span>
                                 <input
                                   className="form-control"
                                   value={inchW}
@@ -532,7 +579,9 @@ export default function AddProduct() {
                             </div>
                             <div className="col-5">
                               <div className="input-group">
-                                <span className="input-group-text">Height</span>
+                                <span className="input-group-text font-medium">
+                                  Height
+                                </span>
                                 <input
                                   className="form-control"
                                   value={inchH}
@@ -551,13 +600,17 @@ export default function AddProduct() {
                     >
                       <div className="row w-100">
                         <div className="col-4">
-                          <Form.Label>Dimensions (Cm)</Form.Label>
+                          <Form.Label className="font-medium">
+                            Dimensions (Cm)
+                          </Form.Label>
                         </div>
                         <div className="col-8">
                           <div className="row w-100">
                             <div className="col-5">
                               <div className="input-group">
-                                <span className="input-group-text">Width</span>
+                                <span className="input-group-text font-medium">
+                                  Width
+                                </span>
                                 <input
                                   className="form-control"
                                   value={cmW}
@@ -571,7 +624,9 @@ export default function AddProduct() {
                             </div>
                             <div className="col-5">
                               <div className="input-group">
-                                <span className="input-group-text">Height</span>
+                                <span className="input-group-text font-medium">
+                                  Height
+                                </span>
                                 <input
                                   className="form-control"
                                   value={cmH}
@@ -593,7 +648,7 @@ export default function AddProduct() {
                     >
                       <div className="row w-100">
                         <div className="col-4">
-                          <Form.Label>Price</Form.Label>
+                          <Form.Label className="font-medium">Price</Form.Label>
                         </div>
                         <div className="col-8">
                           <Form.Control
@@ -649,22 +704,34 @@ export default function AddProduct() {
                 <div className="modal-body pb-5">
                   {/* Cover Name */}
                   <Form.Group className="mb-3">
-                    <Form.Label>Cover Name</Form.Label>
-                    <Form.Control type="text" placeholder="Enter cover name" />
+                    <Form.Label className="font-medium">Cover Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      onChange={(e) => setCoverName(e.target.value)}
+                      value={coverName}
+                      placeholder="Enter cover name"
+                    />
                   </Form.Group>
 
                   {/* Cover Note */}
                   <Form.Group className="mb-3">
-                    <Form.Label>Cover Note</Form.Label>
-                    <Form.Control type="text" placeholder="Enter cover note" />
+                    <Form.Label className="font-medium">Cover Note</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={coverNote}
+                      onChange={(e) => setCoverNote(e.target.value)}
+                      placeholder="Enter cover note"
+                    />
                   </Form.Group>
 
                   {/* Description */}
                   <Form.Group className="mb-3">
-                    <Form.Label>Description</Form.Label>
+                    <Form.Label className="font-medium">Description</Form.Label>
                     <Form.Control
                       as="textarea"
                       placeholder="Enter description"
+                      value={coverDescription}
+                      onChange={(e) => setCoverDescription(e.target.value)}
                       style={{
                         height: "60px",
                         whiteSpace: "pre-wrap",
@@ -676,7 +743,7 @@ export default function AddProduct() {
 
                   {/* Cover Media Section */}
                   <div className="mb-4">
-                    <h5>Cover Media</h5>
+                    <h5 className="font-medium">Cover Media</h5>
                   </div>
                   <div className="preview-images mb-4">
                     {coverMediaFiles.map((file, index) => (
@@ -752,6 +819,13 @@ export default function AddProduct() {
                       </label>
                     </div>
                   </Form.Group>
+                  <button
+                    onClick={displayCoverData}
+                    data-bs-dismiss="modal"
+                    className="btn btn-dark mt-3 w-100"
+                  >
+                    Add Cover
+                  </button>
                 </div>
               </div>
             </div>
@@ -788,15 +862,51 @@ export default function AddProduct() {
                     data-bs-target="#variant-modal"
                     onClick={() => handleEditVariant(index)}
                   >
-                    Edit
+                    <span className="bi bi-pen"></span>
                   </Button>{" "}
                   <Button
                     variant="danger"
                     size="sm"
                     onClick={() => handleDeleteVariant(index)}
                   >
-                    Delete
+                    <span className="bi bi-trash"></span>
                   </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Row>
+      <Row className={`mt-5 d-${coverTable}`}>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cover Name</th>
+              <th>Cover Note</th>
+              <th>Cover Description</th>
+              <th>Preview</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {covers.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{item.coverName}</td>
+                <td>{item.coverNote}</td>
+                <td>{item.coverDescription}</td>
+                <td>
+                 {
+                  coverMediaFiles.map(item  => 
+
+                    <img src={item.file} />
+                  )
+                 }
+                </td>
+                <td>
+                  <button className="btn btn-success mr-4"><span className="bi bi-pen"></span></button>
+                  <button className="btn btn-danger "><span className="bi bi-trash"></span></button>
                 </td>
               </tr>
             ))}
