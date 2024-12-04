@@ -360,7 +360,7 @@ export default function AddProduct() {
                 <hr />
                 <form>
                   {/* Title */}
-                  <Form.Group className="mt-1">
+                  <Form.Group className="mt-3">
                     <Form.Label>Title</Form.Label>
                     <Form.Control
                       type="text"
@@ -382,9 +382,23 @@ export default function AddProduct() {
                         lineHeight: "40px",
                       }}
                     />
+                    <Form.Group className="mt-3">
+                      <Form.Label>Offers</Form.Label>
+                      <Form.Control
+                     as="textarea"
+                      name="offers"
+                      placeholder="Offers"
+                      style={{
+                        height: "auto",
+                        whiteSpace: "pre-wrap",
+                        paddingTop: "10px",
+                        lineHeight: "40px",
+                      }}
+                    />
+                    </Form.Group>
                   </Form.Group>
                   {/* Category and Subcategory */}
-                  <div className="row mt-1">
+                  <div className="row mt-3">
                     <Form.Group as={Col} md="6">
                       <Form.Label>Category</Form.Label>
 
@@ -397,7 +411,7 @@ export default function AddProduct() {
                         ))}
                         <option>Add New Category</option>
                       </select>
-                      <div className={`d-${dnewCat} my-2`}>
+                      <div className={`d-${dnewCat} my-2 mt-3`}>
                         <input
                           className="form-control"
                           style={{ padding: "-5px" }}
@@ -416,7 +430,7 @@ export default function AddProduct() {
                         ))}
                         <option>Add New Subcategory</option>
                       </select>
-                      <div className={`d-${dnewSubCat} my-2`}>
+                      <div className={`d-${dnewSubCat} my-2 mt-3`}>
                         <input
                           className="form-control"
                           style={{ padding: "-5px" }}
@@ -436,12 +450,12 @@ export default function AddProduct() {
                     <Button
                       data-bs-toggle="modal"
                       data-bs-target="#variant-modal"
-                      className="btn btn-primary mr-5 w-52"
+                      className="btn btn-primary mr-5 w-32"
                     >
                       Add Variant
                     </Button>
                     <Button
-                      className="btn btn-success mr-5 w-52"
+                      className="btn btn-success mr-5 w-32"
                       data-bs-toggle="modal"
                       data-bs-target="#cover-modal"
                     >
@@ -449,11 +463,11 @@ export default function AddProduct() {
                     </Button>
                   </div>
 
-                  <div className="add-product-btn-container mt-2 ">
+                  <div className="add-product-btn-container  flex justify-center mt-5">
                     {/* Centered the Add Product button */}
                     <Button
                       variant="primary"
-                      className="add-product-btn w-100 "
+                      className="add-product-btn"
                     >
                       Add Product
                     </Button>
@@ -874,20 +888,23 @@ export default function AddProduct() {
                       </label>
                     </div>
                   </Form.Group>
-                  <button
+                 <div className="flex justify-center mt-5">
+                 <button
                     onClick={displayCoverData}
                     data-bs-dismiss="modal"
-                    className="btn btn-dark mt-3 w-100"
+                    className="py-2 px-4 rounded-md text-white bg-[#24425a] mt-3"
                   >
                     {updatedCoverTxt}
                   </button>
+                 </div>
                 </div>
               </div>
             </div>
           </div>
         </Container>
       </div>
-      <Row className={`mt-5 d-${variantTable}`}>
+      <Row className={`mt-5 d-${variantTable} mx-2`}>
+      <h3 className="text-center w-100 bg-[green] py-2 text-white">Variants</h3>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -939,8 +956,8 @@ export default function AddProduct() {
           </tbody>
         </Table>
       </Row>
-      <Row className={`mt-5 d-${coverTable} flex justify-center`}>
-        <h3>Varinats Table</h3>
+      <Row className={`mt-5 d-${coverTable} mx-2 flex justify-center`}>
+        <h3 className="text-center w-100 bg-[green] py-2 text-white">Covers</h3>
         <Table striped bordered hover>
           <thead>
             <tr>
