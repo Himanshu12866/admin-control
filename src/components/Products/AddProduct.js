@@ -33,6 +33,7 @@ export default function AddProduct() {
   const [coverImage, setCoverImage] = useState(null);
   const [covers, setCovers] = useState([]);
   const [coverTable, setCoverTable] = useState("none");
+  const [editIndex, setEditIndex] = useState(null); // Track the index being edited
 
   const handleAddVariant = () => {
     const newVariant = {
@@ -250,29 +251,65 @@ export default function AddProduct() {
   };
 
   // Cover Function
+  // Add or Update Cover Data
   const displayCoverData = () => {
     const newCover = {
       coverName,
       coverNote,
-      coverImage : coverImage ? coverImage.name : null, // Store the entire file object
+      coverImage: coverImage ? coverImage.name : null,
       coverDescription,
     };
-  
-    setCovers((prevCovers) => {
-      const updatedCovers = [...prevCovers, newCover];
-      console.log("Updated Covers:", updatedCovers); 
-      setCoverTable("block");
-      return updatedCovers;
-    });
-  
+
+    if (editIndex !== null) {
+      // Edit existing cover
+      setCovers((prevCovers) => {
+        const updatedCovers = [...prevCovers];
+        updatedCovers[editIndex] = newCover;
+        console.log("Updated Covers:", updatedCovers);
+        return updatedCovers;
+      });
+    } else {
+      // Add new cover
+      setCovers((prevCovers) => {
+        const updatedCovers = [...prevCovers, newCover];
+        console.log("New Cover Added:", updatedCovers);
+        setCoverTable("block");
+        return updatedCovers;
+      });
+    }
+
     // Reset form fields
+    resetFormFields();
+  };
+
+  // Reset Form Fields
+  const resetFormFields = () => {
     setCoverDescription("");
     setCoverImage(null);
     setCoverName("");
     setCoverNote("");
+    setEditIndex(null); // Reset edit index
     setCoverMediaFiles([]); // Clear media file previews
   };
-  
+
+  // Edit Cover
+  const handleEdit = (index) => {
+    const coverToEdit = covers[index];
+    setEditIndex(index);
+    setCoverName(coverToEdit.coverName);
+    setCoverNote(coverToEdit.coverNote);
+    setCoverDescription(coverToEdit.coverDescription);
+    setCoverImage(coverToEdit.coverImage);
+  };
+
+  // Delete Cover
+  const handleDelete = (index) => {
+    setCovers((prevCovers) => {
+      const updatedCovers = prevCovers.filter((_, i) => i !== index);
+      console.log("Covers after delete:", updatedCovers);
+      return updatedCovers;
+    });
+  };
 
   useEffect(() => {
     console.log("Covers state changed:", covers);
@@ -877,51 +914,58 @@ export default function AddProduct() {
         </Table>
       </Row>
       <Row className={`mt-5 d-${coverTable} flex justify-center`}>
-      <Table striped bordered hover>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Cover Name</th>
-      <th>Cover Note</th>
-      <th>Cover Description</th>
-      <th>Preview</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {covers.map((item, index) => (
-      <tr key={index}>
-        <td>{index + 1}</td>
-        <td>{item.coverName}</td>
-        <td>{item.coverNote}</td>
-        <td>{item.coverDescription}</td>
-        <td className="flex justify-center">
-          {item.coverImage && (
-            <img
-              src={item.coverImage} // Generate preview URL
-              alt={item.coverImage}
-              style={{
-                width: "150px",
-                height: "50px",
-                objectFit: "cover",
-                borderRadius: "5px",
-              }}
-            />
-          )}
-        </td>
-        <td>
-          <button className="btn btn-success mr-4">
-            <span className="bi bi-pen"></span>
-          </button>
-          <button className="btn btn-danger">
-            <span className="bi bi-trash"></span>
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</Table>
-
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cover Name</th>
+              <th>Cover Note</th>
+              <th>Cover Description</th>
+              <th>Preview</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {covers.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{item.coverName}</td>
+                <td>{item.coverNote}</td>
+                <td>{item.coverDescription}</td>
+                <td>
+                  {item.coverImage && (
+                    <img
+                      src={item.coverImage}
+                      alt={item.coverImage}
+                      style={{
+                        width: "150px",
+                        height: "50px",
+                        objectFit: "cover",
+                        borderRadius: "5px",
+                      }}
+                    />
+                  )}
+                </td>
+                <td>
+                  <button
+                    className="btn btn-success mr-4"
+                    data-bs-target="#cover-modal"
+                    data-bs-toggle="modal"
+                    onClick={() => handleEdit(index)}
+                  >
+                    <span className="bi bi-pen"></span>
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(index)}
+                  >
+                    <span className="bi bi-trash"></span>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </Row>
     </div>
   );
