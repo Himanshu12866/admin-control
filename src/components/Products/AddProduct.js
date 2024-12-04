@@ -32,7 +32,7 @@ export default function AddProduct() {
   const [coverDescription, setCoverDescription] = useState("");
   const [coverImage, setCoverImage] = useState(null);
   const [covers, setCovers] = useState([]);
-  const [coverTable , setCoverTable] = useState("none")
+  const [coverTable, setCoverTable] = useState("none");
 
   const handleAddVariant = () => {
     const newVariant = {
@@ -127,8 +127,8 @@ export default function AddProduct() {
   };
 
   const resetFields = () => {
-    setThickness("");
-    setSize("");
+    // setThickness("");
+    // setSize("");
     setInchW("");
     setInchH("");
     setCmW("");
@@ -250,30 +250,29 @@ export default function AddProduct() {
   };
 
   // Cover Function
-
   const displayCoverData = () => {
     const newCover = {
       coverName,
       coverNote,
-      coverImage: coverImage ? coverImage.name : null, // Handle null cases
+      coverImage : coverImage ? coverImage.name : null, // Store the entire file object
       coverDescription,
     };
-
-    // Add new cover to the state
+  
     setCovers((prevCovers) => {
       const updatedCovers = [...prevCovers, newCover];
-      console.log("Updated Covers:", updatedCovers); // Log updated covers here
-      setCoverTable("block")
+      console.log("Updated Covers:", updatedCovers); 
+      setCoverTable("block");
       return updatedCovers;
     });
-
+  
     // Reset form fields
     setCoverDescription("");
     setCoverImage(null);
     setCoverName("");
     setCoverNote("");
-    setCoverMediaFiles([]);
+    setCoverMediaFiles([]); // Clear media file previews
   };
+  
 
   useEffect(() => {
     console.log("Covers state changed:", covers);
@@ -743,7 +742,7 @@ export default function AddProduct() {
 
                   {/* Cover Media Section */}
                   <div className="mb-4">
-                    <h5 className="font-medium">Cover Media</h5>
+                    <h5 className="font-medium">Cover Image</h5>
                   </div>
                   <div className="preview-images mb-4">
                     {coverMediaFiles.map((file, index) => (
@@ -877,34 +876,52 @@ export default function AddProduct() {
           </tbody>
         </Table>
       </Row>
-      <Row className={`mt-5 d-${coverTable}`}>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Cover Name</th>
-              <th>Cover Note</th>
-              <th>Cover Description</th>
-              <th>Preview</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {covers.map((item, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{item.coverName}</td>
-                <td>{item.coverNote}</td>
-                <td>{item.coverDescription}</td>
-                <td>{item.coverImage}</td>
-                <td>
-                  <button className="btn btn-success mr-4"><span className="bi bi-pen"></span></button>
-                  <button className="btn btn-danger "><span className="bi bi-trash"></span></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+      <Row className={`mt-5 d-${coverTable} flex justify-center`}>
+      <Table striped bordered hover>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Cover Name</th>
+      <th>Cover Note</th>
+      <th>Cover Description</th>
+      <th>Preview</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {covers.map((item, index) => (
+      <tr key={index}>
+        <td>{index + 1}</td>
+        <td>{item.coverName}</td>
+        <td>{item.coverNote}</td>
+        <td>{item.coverDescription}</td>
+        <td className="flex justify-center">
+          {item.coverImage && (
+            <img
+              src={item.coverImage} // Generate preview URL
+              alt={item.coverImage}
+              style={{
+                width: "150px",
+                height: "50px",
+                objectFit: "cover",
+                borderRadius: "5px",
+              }}
+            />
+          )}
+        </td>
+        <td>
+          <button className="btn btn-success mr-4">
+            <span className="bi bi-pen"></span>
+          </button>
+          <button className="btn btn-danger">
+            <span className="bi bi-trash"></span>
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</Table>
+
       </Row>
     </div>
   );
