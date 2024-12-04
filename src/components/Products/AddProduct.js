@@ -34,6 +34,8 @@ export default function AddProduct() {
   const [covers, setCovers] = useState([]);
   const [coverTable, setCoverTable] = useState("none");
   const [editIndex, setEditIndex] = useState(null); // Track the index being edited
+  const [imageforCover, setImageForCover] = useState([]);
+  const [updatedCoverTxt, setUpdatedCoverTxt] = useState("Add Cover");
 
   const handleAddVariant = () => {
     const newVariant = {
@@ -266,6 +268,7 @@ export default function AddProduct() {
         const updatedCovers = [...prevCovers];
         updatedCovers[editIndex] = newCover;
         console.log("Updated Covers:", updatedCovers);
+
         return updatedCovers;
       });
     } else {
@@ -274,6 +277,7 @@ export default function AddProduct() {
         const updatedCovers = [...prevCovers, newCover];
         console.log("New Cover Added:", updatedCovers);
         setCoverTable("block");
+        setUpdatedCoverTxt("Add Cover");
         return updatedCovers;
       });
     }
@@ -291,6 +295,14 @@ export default function AddProduct() {
     setEditIndex(null); // Reset edit index
     setCoverMediaFiles([]); // Clear media file previews
   };
+  const handleResetCover = () => {
+    setCoverDescription("");
+    setCoverImage(null);
+    setCoverName("");
+    setCoverNote("");
+    setEditIndex(null); // Reset edit index
+    setCoverMediaFiles([]);
+  };
 
   // Edit Cover
   const handleEdit = (index) => {
@@ -300,6 +312,7 @@ export default function AddProduct() {
     setCoverNote(coverToEdit.coverNote);
     setCoverDescription(coverToEdit.coverDescription);
     setCoverImage(coverToEdit.coverImage);
+    setUpdatedCoverTxt("Edit Cover");
   };
 
   // Delete Cover
@@ -732,6 +745,7 @@ export default function AddProduct() {
                   <button
                     type="button"
                     className="btn btn-close"
+                    onClick={handleResetCover}
                     data-bs-dismiss="modal"
                   ></button>
                 </div>
@@ -860,7 +874,7 @@ export default function AddProduct() {
                     data-bs-dismiss="modal"
                     className="btn btn-dark mt-3 w-100"
                   >
-                    Add Cover
+                    {updatedCoverTxt}
                   </button>
                 </div>
               </div>
@@ -889,7 +903,14 @@ export default function AddProduct() {
                 <td>{variant.size}</td>
                 <td>{variant.dimensionsInch}</td>
                 <td>{variant.dimensionsCm}</td>
-                <td>{variant.price}</td>
+                <td>
+                  <span className="font-medium"> &#8377; &nbsp;</span>
+                  {variant.price.toLocaleString("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  })}
+                </td>
+
                 <td>
                   <Button
                     variant="warning"
