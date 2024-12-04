@@ -113,12 +113,12 @@ export default function AddProduct() {
   };
 
   const handleDeleteVariant = (index) => {
-    if(variants.length !== 1 ){
+    if(variants.length === 1 ){
       setVariants(variants.filter((_, i) => i !== index))
+      setVariantTable("none");
     }
     else{
       setVariants(variants.filter((_, i) => i !== index))
-      setVariantTable("none");
     }
 
   };
