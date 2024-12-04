@@ -34,6 +34,15 @@ export default function AddProduct() {
   const [covers, setCovers] = useState([]);
   const [coverTable, setCoverTable] = useState("none");
   const [editIndex, setEditIndex] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [images, setImages] = useState([]);
+  const [offer, setOffer] = useState("");
+const [products, setProducts] = useState([])
+  const [variantsArray, setVariantsArray] = useState([]);
+  const [coverArray, setCoverArray] = useState([]);
 
   const [updatedCoverTxt, setUpdatedCoverTxt] = useState("Add Cover");
 
@@ -262,13 +271,13 @@ export default function AddProduct() {
       coverDescription,
     };
     setCoverTable("block");
-    setUpdatedCoverTxt("Add Cover")
+    setUpdatedCoverTxt("Add Cover");
     if (editIndex !== null) {
       // Edit existing cover
       setCovers((prevCovers) => {
         const updatedCovers = [...prevCovers];
         updatedCovers[editIndex] = newCover;
-      
+
         return updatedCovers;
       });
       setPreviewUrls((prevUrls) => {
@@ -294,6 +303,9 @@ export default function AddProduct() {
   const handleDelete = (index) => {
     setCovers((prevCovers) => prevCovers.filter((_, i) => i !== index));
     setPreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+    if (covers.length === 1) {
+      setCoverTable("none");
+    }
   };
 
   // Separate state for preview URLs
@@ -332,6 +344,25 @@ export default function AddProduct() {
     console.log("Covers state changed:", covers);
   }, [covers]); // Logs whenever covers state changes
 
+
+  // Add Products to sned the API
+
+  const handleAddProduct = () => {
+    let product = {
+      title,
+      offer,
+      description,
+      images:mediaFiles,
+      variants,
+      covers,
+      categories,
+      subCategories,
+      category,
+      subCategory,
+    }
+    setProducts( product)
+    console.log(products)
+  }
   return (
     <div>
       <div className="product-details">
@@ -385,16 +416,16 @@ export default function AddProduct() {
                     <Form.Group className="mt-3">
                       <Form.Label>Offers</Form.Label>
                       <Form.Control
-                     as="textarea"
-                      name="offers"
-                      placeholder="Offers"
-                      style={{
-                        height: "auto",
-                        whiteSpace: "pre-wrap",
-                        paddingTop: "10px",
-                        lineHeight: "40px",
-                      }}
-                    />
+                        as="textarea"
+                        name="offers"
+                        placeholder="Offers"
+                        style={{
+                          height: "auto",
+                          whiteSpace: "pre-wrap",
+                          paddingTop: "10px",
+                          lineHeight: "40px",
+                        }}
+                      />
                     </Form.Group>
                   </Form.Group>
                   {/* Category and Subcategory */}
@@ -441,7 +472,6 @@ export default function AddProduct() {
                       </div>
                     </Form.Group>
                   </div>
-                 
                 </form>
 
                 {/* Media Section */}
@@ -465,10 +495,7 @@ export default function AddProduct() {
 
                   <div className="add-product-btn-container  flex justify-center mt-5">
                     {/* Centered the Add Product button */}
-                    <Button
-                      variant="primary"
-                      className="add-product-btn"
-                    >
+                    <Button variant="primary" onClick={handleAddProduct} className="add-product-btn">
                       Add Product
                     </Button>
                   </div>
@@ -888,15 +915,15 @@ export default function AddProduct() {
                       </label>
                     </div>
                   </Form.Group>
-                 <div className="flex justify-center mt-5">
-                 <button
-                    onClick={displayCoverData}
-                    data-bs-dismiss="modal"
-                    className="py-2 px-4 rounded-md text-white bg-[#24425a] mt-3"
-                  >
-                    {updatedCoverTxt}
-                  </button>
-                 </div>
+                  <div className="flex justify-center mt-5">
+                    <button
+                      onClick={displayCoverData}
+                      data-bs-dismiss="modal"
+                      className="py-2 px-4 rounded-md text-white bg-[#24425a] mt-3"
+                    >
+                      {updatedCoverTxt}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -904,7 +931,9 @@ export default function AddProduct() {
         </Container>
       </div>
       <Row className={`mt-5 d-${variantTable} mx-2`}>
-      <h3 className="text-center w-100 bg-[green] py-2 text-white">Variants</h3>
+        <h3 className="text-center w-100 bg-[green] py-2 text-white">
+          Variants
+        </h3>
         <Table striped bordered hover>
           <thead>
             <tr>
