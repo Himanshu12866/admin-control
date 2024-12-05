@@ -7,7 +7,7 @@ import "../../css/product-details.css";
 import "../../css/addproduct.css";
 import axios from "axios";
 export default function AddProduct() {
-  const [mediaFiles, setMediaFiles] = useState([]); // State for Media Files
+  const [mediaFiles, setMediaFiles] = useState([]); // State for Media F
   const [coverMediaFiles, setCoverMediaFiles] = useState([]); // State for Cover Media Files
   const [thickness, setThickness] = useState("");
   const [data, setData] = useState([]); // State to store fetched data
