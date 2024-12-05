@@ -11,7 +11,7 @@ export default function AddProduct() {
   const [coverMediaFiles, setCoverMediaFiles] = useState([]); // State for Cover Media Files
   const [thickness, setThickness] = useState("");
   const [data, setData] = useState([]); // State to store fetched data
-  const [categories, setCategories] = useState([]); // State to store unique categories
+  const [categories, setCategories] = useState([]); // State to stoe unique categories
   const [subCategories, setSubCategories] = useState([]); // State to store unique categories
   const [size, setSize] = useState("");
   const [price, setPrice] = useState("");
